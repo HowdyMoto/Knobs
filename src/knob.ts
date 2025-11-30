@@ -6,12 +6,21 @@ import {
   DEFAULT_OPTIONS,
   globalConfig,
 } from './types';
-import { SVGRenderer } from './svg-renderer';
+import {
+  SVGRenderer,
+  TOTAL_ROTATION_DEGREES,
+  REFERENCE_VALUE_RANGE,
+  DEGREES_PER_UNIT,
+} from './svg-renderer';
+
+// Counter for generating unique instance IDs
+let instanceCounter = 0;
 
 /**
  * Main Knob class - creates an interactive rotatable knob control
  */
 export class Knob implements IKnob {
+  private instanceId: number;
   private options: typeof DEFAULT_OPTIONS &
     Pick<KnobOptions, 'min' | 'max' | 'valueLabels' | 'className'>;
 
@@ -40,12 +49,19 @@ export class Knob implements IKnob {
   private toggleCallbacks: Set<(event: KnobToggleEvent) => void> = new Set();
 
   // Bound event handlers for cleanup
+  private boundMouseDown: (e: MouseEvent) => void;
   private boundMouseMove: (e: MouseEvent) => void;
   private boundMouseUp: (e: MouseEvent) => void;
+  private boundTouchStart: (e: TouchEvent) => void;
   private boundTouchMove: (e: TouchEvent) => void;
   private boundTouchEnd: (e: TouchEvent) => void;
+  private boundClick: (e: MouseEvent) => void;
+  private boundContextMenu: (e: MouseEvent) => void;
 
   constructor(container: HTMLElement | string, options: Partial<KnobOptions> = {}) {
+    // Generate unique instance ID
+    this.instanceId = instanceCounter++;
+
     // Get container element
     if (typeof container === 'string') {
       const el = document.querySelector(container);
@@ -83,10 +99,14 @@ export class Knob implements IKnob {
     this.angle = this.valueToAngle(this.value);
 
     // Bind event handlers
+    this.boundMouseDown = this.handleMouseDown.bind(this);
     this.boundMouseMove = this.handleMouseMove.bind(this);
     this.boundMouseUp = this.handleMouseUp.bind(this);
+    this.boundTouchStart = this.handleTouchStart.bind(this);
     this.boundTouchMove = this.handleTouchMove.bind(this);
     this.boundTouchEnd = this.handleTouchEnd.bind(this);
+    this.boundClick = this.handleClick.bind(this);
+    this.boundContextMenu = (e: MouseEvent) => e.preventDefault();
 
     // Render the knob
     this.svg = this.render();
@@ -100,7 +120,7 @@ export class Knob implements IKnob {
    * Render the SVG knob
    */
   private render(): SVGSVGElement {
-    const renderer = new SVGRenderer(this.options);
+    const renderer = new SVGRenderer(this.options, this.instanceId);
     const svg = renderer.createSVG();
 
     // Add custom class if provided
@@ -145,18 +165,18 @@ export class Knob implements IKnob {
    */
   private attachEventListeners(): void {
     // Mouse events
-    this.container.addEventListener('mousedown', this.handleMouseDown.bind(this));
+    this.container.addEventListener('mousedown', this.boundMouseDown);
 
     // Touch events
-    this.container.addEventListener('touchstart', this.handleTouchStart.bind(this), { passive: false });
+    this.container.addEventListener('touchstart', this.boundTouchStart, { passive: false });
 
     // Click for toggle
     if (this.options.toggleable) {
-      this.container.addEventListener('click', this.handleClick.bind(this));
+      this.container.addEventListener('click', this.boundClick);
     }
 
     // Prevent context menu on long press
-    this.container.addEventListener('contextmenu', (e) => e.preventDefault());
+    this.container.addEventListener('contextmenu', this.boundContextMenu);
   }
 
   /**
@@ -248,11 +268,9 @@ export class Knob implements IKnob {
       case 'bounded':
         return this.options.max! - this.options.min!;
       case 'min-only':
-        // Use a reference range for unbounded knobs
-        return 10;
       case 'infinite':
-        // Use a reference range for infinite knobs
-        return 10;
+        // Use a reference range for unbounded knobs
+        return REFERENCE_VALUE_RANGE;
     }
   }
 
@@ -299,11 +317,10 @@ export class Knob implements IKnob {
   /**
    * Handle click for toggle
    */
-  private handleClick(e: MouseEvent): void {
+  private handleClick(_e: MouseEvent): void {
     // Only toggle on quick clicks, not after dragging
     if (this.isDragging) return;
 
-    // Check if it was a quick tap (no significant movement)
     this.toggle();
   }
 
@@ -347,12 +364,11 @@ export class Knob implements IKnob {
     switch (this.options.mode) {
       case 'infinite':
         // For infinite mode, use a simple multiplier
-        return value * (270 / 10); // 27 degrees per unit
+        return value * DEGREES_PER_UNIT;
 
       case 'min-only':
         // Map from min to arbitrary range
-        const minOnlyRange = 270; // Total rotation range
-        return ((value - this.options.min!) * minOnlyRange) / 10;
+        return ((value - this.options.min!) * TOTAL_ROTATION_DEGREES) / REFERENCE_VALUE_RANGE;
 
       case 'bounded':
         // Map value to angle range
@@ -396,7 +412,7 @@ export class Knob implements IKnob {
       const led = this.powerIndicator.querySelector('.power-led');
       if (led) {
         (led as SVGElement).style.fill = this.powered ? '#00ff00' : '#333333';
-        (led as SVGElement).style.filter = this.powered ? 'url(#glow-filter)' : 'none';
+        (led as SVGElement).style.filter = this.powered ? `url(#glow-filter-${this.instanceId})` : 'none';
       }
     }
   }
@@ -436,6 +452,12 @@ export class Knob implements IKnob {
   }
 
   setValue(value: number): void {
+    // Validate input
+    if (typeof value !== 'number' || !Number.isFinite(value)) {
+      console.warn('Knob.setValue: Invalid value provided, must be a finite number');
+      return;
+    }
+
     const previousValue = this.value;
     this.updateValue(value);
     if (this.value !== previousValue) {
@@ -460,7 +482,13 @@ export class Knob implements IKnob {
   }
 
   destroy(): void {
-    // Remove all event listeners
+    // Remove container event listeners
+    this.container.removeEventListener('mousedown', this.boundMouseDown);
+    this.container.removeEventListener('touchstart', this.boundTouchStart);
+    this.container.removeEventListener('click', this.boundClick);
+    this.container.removeEventListener('contextmenu', this.boundContextMenu);
+
+    // Remove document event listeners (in case destroy is called while dragging)
     document.removeEventListener('mousemove', this.boundMouseMove);
     document.removeEventListener('mouseup', this.boundMouseUp);
     document.removeEventListener('touchmove', this.boundTouchMove);

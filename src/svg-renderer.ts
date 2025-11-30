@@ -1,16 +1,39 @@
 import { KnobOptions, DEFAULT_OPTIONS } from './types';
 
+// SVG rendering constants
+const GRIP_RIDGE_COUNT = 24;
+
+// Rotation constants (shared with knob.ts via re-export)
+/** Total rotation range in degrees for unbounded knobs */
+export const TOTAL_ROTATION_DEGREES = 270;
+/** Reference range for calculating degrees per unit */
+export const REFERENCE_VALUE_RANGE = 10;
+/** Degrees of rotation per unit value in infinite/min-only modes */
+export const DEGREES_PER_UNIT = TOTAL_ROTATION_DEGREES / REFERENCE_VALUE_RANGE;
+
 /**
  * Creates SVG elements for the knob
  */
 export class SVGRenderer {
   private size: number;
+  private instanceId: number;
   private options: typeof DEFAULT_OPTIONS &
     Pick<KnobOptions, 'min' | 'max' | 'valueLabels' | 'className'>;
 
-  constructor(options: KnobOptions) {
+  // Unique filter IDs for this instance
+  private bodyGradientId: string;
+  private glowFilterId: string;
+  private shadowFilterId: string;
+
+  constructor(options: KnobOptions, instanceId: number = 0) {
     this.options = { ...DEFAULT_OPTIONS, ...options };
     this.size = this.options.size;
+    this.instanceId = instanceId;
+
+    // Generate unique IDs for SVG filters to avoid conflicts between multiple knobs
+    this.bodyGradientId = `knob-body-gradient-${this.instanceId}`;
+    this.glowFilterId = `glow-filter-${this.instanceId}`;
+    this.shadowFilterId = `knob-shadow-${this.instanceId}`;
   }
 
   /**
@@ -75,7 +98,7 @@ export class SVGRenderer {
 
     // Knob body gradient (3D effect)
     const bodyGradient = document.createElementNS('http://www.w3.org/2000/svg', 'radialGradient');
-    bodyGradient.setAttribute('id', 'knob-body-gradient');
+    bodyGradient.setAttribute('id', this.bodyGradientId);
     bodyGradient.setAttribute('cx', '30%');
     bodyGradient.setAttribute('cy', '30%');
     bodyGradient.setAttribute('r', '70%');
@@ -94,7 +117,7 @@ export class SVGRenderer {
 
     // Glow filter
     const glowFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
-    glowFilter.setAttribute('id', 'glow-filter');
+    glowFilter.setAttribute('id', this.glowFilterId);
     glowFilter.setAttribute('x', '-50%');
     glowFilter.setAttribute('y', '-50%');
     glowFilter.setAttribute('width', '200%');
@@ -118,7 +141,7 @@ export class SVGRenderer {
 
     // Drop shadow for knob
     const shadowFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
-    shadowFilter.setAttribute('id', 'knob-shadow');
+    shadowFilter.setAttribute('id', this.shadowFilterId);
     shadowFilter.setAttribute('x', '-20%');
     shadowFilter.setAttribute('y', '-20%');
     shadowFilter.setAttribute('width', '140%');
@@ -253,7 +276,7 @@ export class SVGRenderer {
     outerRing.setAttribute('cy', String(center));
     outerRing.setAttribute('r', String(radius + 3));
     outerRing.setAttribute('fill', '#444444');
-    outerRing.setAttribute('filter', 'url(#knob-shadow)');
+    outerRing.setAttribute('filter', `url(#${this.shadowFilterId})`);
     group.appendChild(outerRing);
 
     // Main knob body
@@ -261,13 +284,12 @@ export class SVGRenderer {
     body.setAttribute('cx', String(center));
     body.setAttribute('cy', String(center));
     body.setAttribute('r', String(radius));
-    body.setAttribute('fill', 'url(#knob-body-gradient)');
+    body.setAttribute('fill', `url(#${this.bodyGradientId})`);
     group.appendChild(body);
 
     // Grip ridges (subtle texture)
-    const ridgeCount = 24;
-    for (let i = 0; i < ridgeCount; i++) {
-      const angle = (360 / ridgeCount) * i;
+    for (let i = 0; i < GRIP_RIDGE_COUNT; i++) {
+      const angle = (360 / GRIP_RIDGE_COUNT) * i;
       const radians = (angle - 90) * (Math.PI / 180);
 
       const x1 = center + Math.cos(radians) * (radius * 0.85);
@@ -336,7 +358,7 @@ export class SVGRenderer {
     glow.setAttribute('cy', String(center));
     glow.setAttribute('r', String(radius));
     glow.setAttribute('fill', this.options.glowColor);
-    glow.setAttribute('filter', 'url(#glow-filter)');
+    glow.setAttribute('filter', `url(#${this.glowFilterId})`);
     glow.setAttribute('opacity', '0.8');
     group.appendChild(glow);
 

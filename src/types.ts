@@ -11,19 +11,15 @@ export interface GlobalConfig {
 
   /** Speed multiplier when holding Ctrl (should be < 1 for slower) */
   ctrlMultiplier: number;
-
-  /** Acceleration limit (0-1) - how quickly the knob reaches full speed */
-  accelerationLimit: number;
 }
 
 /**
  * Global configuration instance
  */
 export const globalConfig: GlobalConfig = {
-  pixelsPerFullRotation: 200,
-  shiftMultiplier: 5,
-  ctrlMultiplier: 0.2,
-  accelerationLimit: 0.15,
+  pixelsPerFullRotation: 400,
+  shiftMultiplier: 4,
+  ctrlMultiplier: 0.25,
 };
 
 /**
@@ -77,9 +73,6 @@ export interface KnobOptions {
 
   /** Override global ctrlMultiplier for this knob */
   ctrlMultiplier?: number;
-
-  /** Override global accelerationLimit for this knob */
-  accelerationLimit?: number;
 
   /** Enable toggle on/off functionality on click */
   toggleable?: boolean;
