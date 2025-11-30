@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knobs Demo - Audio/Music UI Controls</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: 300;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #888;
+      margin-bottom: 40px;
+      font-size: 14px;
+    }
+
+    .demo-section {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      backdrop-filter: blur(10px);
+    }
+
+    .demo-section h2 {
+      margin-top: 0;
+      font-weight: 400;
+      color: #aaa;
+      font-size: 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
+      margin-bottom: 25px;
+    }
+
+    .knob-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .knob-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .value-display {
+      margin-top: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      color: #4ecdc4;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px 15px;
+      border-radius: 4px;
+      min-width: 80px;
+      text-align: center;
+    }
+
+    .amp-panel {
+      background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+      border: 2px solid #444;
+      border-radius: 8px;
+      padding: 30px 40px;
+      box-shadow:
+        inset 0 2px 4px rgba(255, 255, 255, 0.1),
+        0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .amp-panel h3 {
+      text-align: center;
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      color: #c9a227;
+      margin: 0 0 20px 0;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .mixer-channel {
+      background: linear-gradient(180deg, #333 0%, #222 100%);
+      border: 1px solid #555;
+      border-radius: 4px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .channel-label {
+      font-size: 12px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .instructions {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 20px;
+      margin-top: 30px;
+    }
+
+    .instructions h3 {
+      margin-top: 0;
+      color: #4ecdc4;
+      font-weight: 400;
+    }
+
+    .instructions ul {
+      margin: 0;
+      padding-left: 20px;
+      color: #999;
+      line-height: 1.8;
+    }
+
+    .instructions code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 600px) {
+      .knob-row {
+        gap: 20px;
+      }
+
+      .amp-panel {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🎛️ KNOBS</h1>
+  <p class="subtitle">Rotatable knob controls for audio/music web applications</p>
+
+  <!-- Guitar Amp Style -->
+  <div class="demo-section">
+    <h2>Guitar Amp Style (Bounded 0-11)</h2>
+    <div class="amp-panel">
+      <h3>✦ VINTAGE AMP ✦</h3>
+      <div class="knob-row">
+        <div class="knob-container">
+          <div id="gain-knob"></div>
+          <div class="value-display" id="gain-value">5</div>
+        </div>
+        <div class="knob-container">
+          <div id="bass-knob"></div>
+          <div class="value-display" id="bass-value">5</div>
+        </div>
+        <div class="knob-container">
+          <div id="mid-knob"></div>
+          <div class="value-display" id="mid-value">5</div>
+        </div>
+        <div class="knob-container">
+          <div id="treble-knob"></div>
+          <div class="value-display" id="treble-value">5</div>
+        </div>
+        <div class="knob-container">
+          <div id="volume-knob"></div>
+          <div class="value-display" id="volume-value">5</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toggleable with Glow -->
+  <div class="demo-section">
+    <h2>Toggleable Power Knobs with Glow (Click to Toggle)</h2>
+    <div class="knob-row">
+      <div class="knob-container">
+        <div id="power-knob-1"></div>
+        <div class="value-display" id="power-value-1">OFF</div>
+      </div>
+      <div class="knob-container">
+        <div id="power-knob-2"></div>
+        <div class="value-display" id="power-value-2">ON: 7</div>
+      </div>
+      <div class="knob-container">
+        <div id="power-knob-3"></div>
+        <div class="value-display" id="power-value-3">ON: 3</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Infinite Rotation -->
+  <div class="demo-section">
+    <h2>Infinite Rotation (No Min/Max)</h2>
+    <div class="knob-row">
+      <div class="knob-container">
+        <div id="infinite-knob-1"></div>
+        <div class="value-display" id="infinite-value-1">0</div>
+      </div>
+      <div class="knob-container">
+        <div id="infinite-knob-2"></div>
+        <div class="value-display" id="infinite-value-2">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Min Only -->
+  <div class="demo-section">
+    <h2>Minimum Only (No Maximum)</h2>
+    <div class="knob-row">
+      <div class="knob-container">
+        <div id="min-only-knob"></div>
+        <div class="value-display" id="min-only-value">0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mixer Channel Strip -->
+  <div class="demo-section">
+    <h2>Mixer Channel Strip</h2>
+    <div class="knob-row">
+      <div class="mixer-channel">
+        <span class="channel-label">Channel 1</span>
+        <div id="ch1-pan"></div>
+        <div id="ch1-freq"></div>
+        <div id="ch1-gain"></div>
+        <div class="value-display" id="ch1-values">Pan: C | Freq: 50 | Gain: 0</div>
+      </div>
+      <div class="mixer-channel">
+        <span class="channel-label">Channel 2</span>
+        <div id="ch2-pan"></div>
+        <div id="ch2-freq"></div>
+        <div id="ch2-gain"></div>
+        <div class="value-display" id="ch2-values">Pan: C | Freq: 50 | Gain: 0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="instructions">
+    <h3>How to Use</h3>
+    <ul>
+      <li><strong>Drag up/down</strong> - Click and drag vertically to adjust the value</li>
+      <li><strong>Hold <code>Shift</code></strong> - Move faster (5x speed)</li>
+      <li><strong>Hold <code>Ctrl</code></strong> - Move slower (fine adjustment)</li>
+      <li><strong>Click</strong> - Toggle power on/off (for toggleable knobs)</li>
+      <li><strong>Touch</strong> - Works on mobile devices too!</li>
+    </ul>
+  </div>
+
+  <script type="module">
+    import {
+      Knob,
+      createSpinalTapKnob,
+      createPowerKnob,
+      createInfiniteKnob,
+      createMinOnlyKnob,
+      createPanKnob,
+      createFrequencyKnob,
+      configureKnobs
+    } from './dist/knobs.esm.js';
+
+    // Configure global sensitivity settings for all knobs
+    // pixelsPerFullRotation: how many pixels of mouse movement to go from min to max
+    configureKnobs({
+      pixelsPerFullRotation: 200,  // 200 pixels to traverse full range
+      shiftMultiplier: 5,          // 5x faster when holding Shift
+      ctrlMultiplier: 0.2,         // 5x slower when holding Ctrl
+      accelerationLimit: 0.15,     // Smooth acceleration curve
+    });
+
+    // Guitar Amp Knobs
+    const ampOptions = {
+      size: 70,
+      backgroundColor: '#1a1a1a',
+      dialColor: '#0a0a0a',
+      indicatorColor: '#f0f0f0',
+      tickColor: '#666',
+      labelColor: '#999',
+    };
+
+    const gainKnob = createSpinalTapKnob('#gain-knob', { ...ampOptions, label: 'Gain', value: 5 });
+    const bassKnob = createSpinalTapKnob('#bass-knob', { ...ampOptions, label: 'Bass', value: 5 });
+    const midKnob = createSpinalTapKnob('#mid-knob', { ...ampOptions, label: 'Mid', value: 5 });
+    const trebleKnob = createSpinalTapKnob('#treble-knob', { ...ampOptions, label: 'Treble', value: 5 });
+    const volumeKnob = createSpinalTapKnob('#volume-knob', { ...ampOptions, label: 'Volume', value: 5 });
+
+    gainKnob.onChange(e => document.getElementById('gain-value').textContent = e.value.toFixed(0));
+    bassKnob.onChange(e => document.getElementById('bass-value').textContent = e.value.toFixed(0));
+    midKnob.onChange(e => document.getElementById('mid-value').textContent = e.value.toFixed(0));
+    trebleKnob.onChange(e => document.getElementById('treble-value').textContent = e.value.toFixed(0));
+    volumeKnob.onChange(e => document.getElementById('volume-value').textContent = e.value.toFixed(0));
+
+    // Power Knobs with Glow
+    const powerKnob1 = createPowerKnob('#power-knob-1', {
+      label: 'Drive',
+      powered: false,
+      value: 5,
+      glowColor: '#ff3300'
+    });
+    const powerKnob2 = createPowerKnob('#power-knob-2', {
+      label: 'Overdrive',
+      powered: true,
+      value: 7,
+      glowColor: '#ff6600'
+    });
+    const powerKnob3 = createPowerKnob('#power-knob-3', {
+      label: 'Boost',
+      powered: true,
+      value: 3,
+      glowColor: '#00ff66'
+    });
+
+    function updatePowerDisplay(id, knob) {
+      const display = document.getElementById(id);
+      if (knob.isPowered()) {
+        display.textContent = `ON: ${knob.getValue().toFixed(0)}`;
+      } else {
+        display.textContent = 'OFF';
+      }
+    }
+
+    powerKnob1.onChange(() => updatePowerDisplay('power-value-1', powerKnob1));
+    powerKnob1.onToggle(() => updatePowerDisplay('power-value-1', powerKnob1));
+    powerKnob2.onChange(() => updatePowerDisplay('power-value-2', powerKnob2));
+    powerKnob2.onToggle(() => updatePowerDisplay('power-value-2', powerKnob2));
+    powerKnob3.onChange(() => updatePowerDisplay('power-value-3', powerKnob3));
+    powerKnob3.onToggle(() => updatePowerDisplay('power-value-3', powerKnob3));
+
+    // Infinite Knobs
+    const infiniteKnob1 = createInfiniteKnob('#infinite-knob-1', {
+      label: 'Encoder A',
+      size: 80,
+      dialColor: '#2a4a6a',
+      indicatorColor: '#4ecdc4'
+    });
+    const infiniteKnob2 = createInfiniteKnob('#infinite-knob-2', {
+      label: 'Encoder B',
+      size: 80,
+      dialColor: '#4a2a6a',
+      indicatorColor: '#c44ecd'
+    });
+
+    infiniteKnob1.onChange(e => {
+      document.getElementById('infinite-value-1').textContent = e.value.toFixed(1);
+    });
+    infiniteKnob2.onChange(e => {
+      document.getElementById('infinite-value-2').textContent = e.value.toFixed(1);
+    });
+
+    // Min Only Knob
+    const minOnlyKnob = createMinOnlyKnob('#min-only-knob', {
+      label: 'Threshold',
+      size: 80,
+      min: 0,
+      step: 0.5
+    });
+
+    minOnlyKnob.onChange(e => {
+      document.getElementById('min-only-value').textContent = e.value.toFixed(1);
+    });
+
+    // Mixer Channel Strips
+    const mixerOptions = { size: 50 };
+
+    // Channel 1
+    const ch1Pan = createPanKnob('#ch1-pan', { ...mixerOptions, label: 'Pan' });
+    const ch1Freq = createFrequencyKnob('#ch1-freq', { ...mixerOptions, label: 'EQ' });
+    const ch1Gain = new Knob('#ch1-gain', {
+      ...mixerOptions,
+      mode: 'bounded',
+      min: -20,
+      max: 20,
+      value: 0,
+      step: 0.5,
+      label: 'Gain',
+      tickCount: 5,
+      valueLabels: ['-20', '-10', '0', '+10', '+20']
+    });
+
+    function updateCh1Display() {
+      const pan = ch1Pan.getValue();
+      const panStr = pan === 0 ? 'C' : (pan < 0 ? `L${Math.abs(pan)}` : `R${pan}`);
+      document.getElementById('ch1-values').textContent =
+        `Pan: ${panStr} | Freq: ${ch1Freq.getValue()} | Gain: ${ch1Gain.getValue() > 0 ? '+' : ''}${ch1Gain.getValue()}`;
+    }
+
+    ch1Pan.onChange(updateCh1Display);
+    ch1Freq.onChange(updateCh1Display);
+    ch1Gain.onChange(updateCh1Display);
+
+    // Channel 2
+    const ch2Pan = createPanKnob('#ch2-pan', { ...mixerOptions, label: 'Pan' });
+    const ch2Freq = createFrequencyKnob('#ch2-freq', { ...mixerOptions, label: 'EQ' });
+    const ch2Gain = new Knob('#ch2-gain', {
+      ...mixerOptions,
+      mode: 'bounded',
+      min: -20,
+      max: 20,
+      value: 0,
+      step: 0.5,
+      label: 'Gain',
+      tickCount: 5,
+      valueLabels: ['-20', '-10', '0', '+10', '+20']
+    });
+
+    function updateCh2Display() {
+      const pan = ch2Pan.getValue();
+      const panStr = pan === 0 ? 'C' : (pan < 0 ? `L${Math.abs(pan)}` : `R${pan}`);
+      document.getElementById('ch2-values').textContent =
+        `Pan: ${panStr} | Freq: ${ch2Freq.getValue()} | Gain: ${ch2Gain.getValue() > 0 ? '+' : ''}${ch2Gain.getValue()}`;
+    }
+
+    ch2Pan.onChange(updateCh2Display);
+    ch2Freq.onChange(updateCh2Display);
+    ch2Gain.onChange(updateCh2Display);
+
+    console.log('🎛️ Knobs Demo Loaded!');
+    console.log('Knobs available:', {
+      gainKnob, bassKnob, midKnob, trebleKnob, volumeKnob,
+      powerKnob1, powerKnob2, powerKnob3,
+      infiniteKnob1, infiniteKnob2,
+      minOnlyKnob,
+      ch1Pan, ch1Freq, ch1Gain,
+      ch2Pan, ch2Freq, ch2Gain
+    });
+  </script>
+</body>
+</html>
