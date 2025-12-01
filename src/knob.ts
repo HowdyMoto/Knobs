@@ -1,7 +1,6 @@
 import {
   KnobOptions,
   KnobChangeEvent,
-  KnobToggleEvent,
   IKnob,
   DEFAULT_OPTIONS,
   globalConfig,
@@ -32,13 +31,10 @@ export class Knob implements IKnob {
   private container: HTMLElement;
   private svg: SVGSVGElement;
   private dialGroup: SVGGElement | null = null;
-  private glowGroup: SVGGElement | null = null;
-  private powerIndicator: SVGGElement | null = null;
 
   private value: number;          // The stepped/rounded value for external use
   private rawValue: number = 0;   // Internal unrounded value for smooth tracking
   private angle: number = 0;
-  private powered: boolean;
 
   // Interaction state
   private isDragging: boolean = false;
@@ -46,7 +42,6 @@ export class Knob implements IKnob {
 
   // Event callbacks
   private changeCallbacks: Set<(event: KnobChangeEvent) => void> = new Set();
-  private toggleCallbacks: Set<(event: KnobToggleEvent) => void> = new Set();
 
   // Bound event handlers for cleanup
   private boundMouseDown: (e: MouseEvent) => void;
@@ -55,7 +50,6 @@ export class Knob implements IKnob {
   private boundTouchStart: (e: TouchEvent) => void;
   private boundTouchMove: (e: TouchEvent) => void;
   private boundTouchEnd: (e: TouchEvent) => void;
-  private boundClick: (e: MouseEvent) => void;
   private boundContextMenu: (e: MouseEvent) => void;
 
   constructor(container: HTMLElement | string, options: Partial<KnobOptions> = {}) {
@@ -93,7 +87,6 @@ export class Knob implements IKnob {
     // Initialize value
     this.value = this.options.value;
     this.rawValue = this.options.value;
-    this.powered = this.options.powered;
 
     // Calculate initial angle
     this.angle = this.valueToAngle(this.value);
@@ -105,7 +98,6 @@ export class Knob implements IKnob {
     this.boundTouchStart = this.handleTouchStart.bind(this);
     this.boundTouchMove = this.handleTouchMove.bind(this);
     this.boundTouchEnd = this.handleTouchEnd.bind(this);
-    this.boundClick = this.handleClick.bind(this);
     this.boundContextMenu = (e: MouseEvent) => e.preventDefault();
 
     // Render the knob
@@ -154,8 +146,6 @@ export class Knob implements IKnob {
 
     // Get references to animated elements
     this.dialGroup = svg.querySelector('.knob-dial') as SVGGElement;
-    this.glowGroup = svg.querySelector('.knob-glow') as SVGGElement;
-    this.powerIndicator = svg.querySelector('.knob-power') as SVGGElement;
 
     return svg;
   }
@@ -169,11 +159,6 @@ export class Knob implements IKnob {
 
     // Touch events
     this.container.addEventListener('touchstart', this.boundTouchStart, { passive: false });
-
-    // Click for toggle
-    if (this.options.toggleable) {
-      this.container.addEventListener('click', this.boundClick);
-    }
 
     // Prevent context menu on long press
     this.container.addEventListener('contextmenu', this.boundContextMenu);
@@ -278,8 +263,6 @@ export class Knob implements IKnob {
    * Process drag movement
    */
   private processDrag(deltaY: number, shiftKey: boolean, ctrlKey: boolean): void {
-    if (!this.powered && this.options.toggleable) return;
-
     // Calculate movement as a fraction of the full rotation (0 to 1)
     // pixelsPerFullRotation defines how many pixels = 100% of the dial travel
     let movementFraction = deltaY / this.pixelsPerFullRotation;
@@ -312,16 +295,6 @@ export class Knob implements IKnob {
   private endDrag(): void {
     this.isDragging = false;
     this.container.style.cursor = 'pointer';
-  }
-
-  /**
-   * Handle click for toggle
-   */
-  private handleClick(_e: MouseEvent): void {
-    // Only toggle on quick clicks, not after dragging
-    if (this.isDragging) return;
-
-    this.toggle();
   }
 
   /**
@@ -387,34 +360,6 @@ export class Knob implements IKnob {
     if (this.dialGroup) {
       this.dialGroup.style.transform = `rotate(${this.angle}deg)`;
     }
-
-    // Update glow brightness based on value
-    if (this.glowGroup && this.options.glow) {
-      let brightness: number;
-
-      if (this.options.mode === 'bounded') {
-        brightness = (this.value - this.options.min!) / (this.options.max! - this.options.min!);
-      } else if (this.options.mode === 'min-only') {
-        // Normalize to a reasonable range
-        brightness = Math.min(1, (this.value - this.options.min!) / 10);
-      } else {
-        // For infinite, use absolute value with wrapping
-        brightness = Math.abs(Math.sin(this.value * 0.1));
-      }
-
-      // Apply brightness to glow
-      const opacity = this.powered ? 0.3 + brightness * 0.7 : 0;
-      this.glowGroup.style.opacity = String(opacity);
-    }
-
-    // Update power indicator
-    if (this.powerIndicator) {
-      const led = this.powerIndicator.querySelector('.power-led');
-      if (led) {
-        (led as SVGElement).style.fill = this.powered ? '#00ff00' : '#333333';
-        (led as SVGElement).style.filter = this.powered ? `url(#glow-filter-${this.instanceId})` : 'none';
-      }
-    }
   }
 
   /**
@@ -425,24 +370,10 @@ export class Knob implements IKnob {
       value: this.value,
       previousValue,
       angle: this.angle,
-      powered: this.powered,
       knob: this,
     };
 
     this.changeCallbacks.forEach((callback) => callback(event));
-  }
-
-  /**
-   * Emit toggle event
-   */
-  private emitToggle(): void {
-    const event: KnobToggleEvent = {
-      powered: this.powered,
-      value: this.value,
-      knob: this,
-    };
-
-    this.toggleCallbacks.forEach((callback) => callback(event));
   }
 
   // Public API
@@ -465,27 +396,10 @@ export class Knob implements IKnob {
     }
   }
 
-  isPowered(): boolean {
-    return this.powered;
-  }
-
-  setPowered(powered: boolean): void {
-    if (this.powered !== powered) {
-      this.powered = powered;
-      this.updateVisuals();
-      this.emitToggle();
-    }
-  }
-
-  toggle(): void {
-    this.setPowered(!this.powered);
-  }
-
   destroy(): void {
     // Remove container event listeners
     this.container.removeEventListener('mousedown', this.boundMouseDown);
     this.container.removeEventListener('touchstart', this.boundTouchStart);
-    this.container.removeEventListener('click', this.boundClick);
     this.container.removeEventListener('contextmenu', this.boundContextMenu);
 
     // Remove document event listeners (in case destroy is called while dragging)
@@ -497,7 +411,6 @@ export class Knob implements IKnob {
 
     // Clear callbacks
     this.changeCallbacks.clear();
-    this.toggleCallbacks.clear();
 
     // Remove from DOM
     this.container.innerHTML = '';
@@ -511,15 +424,9 @@ export class Knob implements IKnob {
     this.changeCallbacks.add(callback);
   }
 
-  onToggle(callback: (event: KnobToggleEvent) => void): void {
-    this.toggleCallbacks.add(callback);
-  }
-
-  off(event: 'change' | 'toggle', callback: Function): void {
+  off(event: 'change', callback: Function): void {
     if (event === 'change') {
       this.changeCallbacks.delete(callback as (event: KnobChangeEvent) => void);
-    } else if (event === 'toggle') {
-      this.toggleCallbacks.delete(callback as (event: KnobToggleEvent) => void);
     }
   }
 }

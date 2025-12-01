@@ -22,7 +22,6 @@ export class SVGRenderer {
 
   // Unique filter IDs for this instance
   private bodyGradientId: string;
-  private glowFilterId: string;
   private shadowFilterId: string;
 
   constructor(options: KnobOptions, instanceId: number = 0) {
@@ -32,7 +31,6 @@ export class SVGRenderer {
 
     // Generate unique IDs for SVG filters to avoid conflicts between multiple knobs
     this.bodyGradientId = `knob-body-gradient-${this.instanceId}`;
-    this.glowFilterId = `glow-filter-${this.instanceId}`;
     this.shadowFilterId = `knob-shadow-${this.instanceId}`;
   }
 
@@ -73,20 +71,6 @@ export class SVGRenderer {
     dial.setAttribute('class', 'knob-dial');
     svg.appendChild(dial);
 
-    // Create glow effect if enabled
-    if (this.options.glow) {
-      const glow = this.createGlow(padding);
-      glow.setAttribute('class', 'knob-glow');
-      svg.appendChild(glow);
-    }
-
-    // Create power indicator if toggleable
-    if (this.options.toggleable) {
-      const powerIndicator = this.createPowerIndicator(padding);
-      powerIndicator.setAttribute('class', 'knob-power');
-      svg.appendChild(powerIndicator);
-    }
-
     return svg;
   }
 
@@ -115,30 +99,6 @@ export class SVGRenderer {
     bodyGradient.appendChild(stop2);
     defs.appendChild(bodyGradient);
 
-    // Glow filter
-    const glowFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
-    glowFilter.setAttribute('id', this.glowFilterId);
-    glowFilter.setAttribute('x', '-50%');
-    glowFilter.setAttribute('y', '-50%');
-    glowFilter.setAttribute('width', '200%');
-    glowFilter.setAttribute('height', '200%');
-
-    const feGaussianBlur = document.createElementNS('http://www.w3.org/2000/svg', 'feGaussianBlur');
-    feGaussianBlur.setAttribute('stdDeviation', '3');
-    feGaussianBlur.setAttribute('result', 'coloredBlur');
-
-    const feMerge = document.createElementNS('http://www.w3.org/2000/svg', 'feMerge');
-    const feMergeNode1 = document.createElementNS('http://www.w3.org/2000/svg', 'feMergeNode');
-    feMergeNode1.setAttribute('in', 'coloredBlur');
-    const feMergeNode2 = document.createElementNS('http://www.w3.org/2000/svg', 'feMergeNode');
-    feMergeNode2.setAttribute('in', 'SourceGraphic');
-    feMerge.appendChild(feMergeNode1);
-    feMerge.appendChild(feMergeNode2);
-
-    glowFilter.appendChild(feGaussianBlur);
-    glowFilter.appendChild(feMerge);
-    defs.appendChild(glowFilter);
-
     // Drop shadow for knob
     const shadowFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
     shadowFilter.setAttribute('id', this.shadowFilterId);
@@ -160,13 +120,12 @@ export class SVGRenderer {
   }
 
   /**
-   * Create the background plate with tick marks
+   * Create the background plate with optional tick marks
    */
   private createPlate(padding: number): SVGGElement {
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     const center = this.size / 2 + padding;
     const outerRadius = this.size / 2;
-    const innerRadius = outerRadius * 0.75;
     const tickLength = outerRadius * 0.12;
 
     // Background circle
@@ -177,8 +136,8 @@ export class SVGRenderer {
     bg.setAttribute('fill', this.options.backgroundColor);
     group.appendChild(bg);
 
-    // Draw tick marks
-    if (this.options.mode === 'bounded') {
+    // Draw tick marks if enabled
+    if (this.options.showTicks && this.options.mode === 'bounded') {
       const startAngle = this.options.startAngle;
       const endAngle = this.options.endAngle;
       const totalAngle = endAngle - startAngle;
@@ -318,77 +277,24 @@ export class SVGRenderer {
     const center = this.size / 2 + padding;
     const radius = this.size * 0.35;
 
-    // Indicator line
-    const indicatorLength = radius * 0.7;
+    // Calculate indicator dimensions from options
+    const indicatorLength = this.options.indicatorLength; // 0-1 fraction of radius
+    const indicatorWidth = this.options.indicatorWidth;
+
+    // Indicator line - extends from inner point to near edge of knob
+    const innerDistance = radius * (1 - indicatorLength);
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', String(center));
-    line.setAttribute('y1', String(center - radius * 0.2));
+    line.setAttribute('y1', String(center - innerDistance));
     line.setAttribute('x2', String(center));
-    line.setAttribute('y2', String(center - indicatorLength));
+    line.setAttribute('y2', String(center - radius + 2)); // Ends near edge of knob
     line.setAttribute('stroke', this.options.indicatorColor);
-    line.setAttribute('stroke-width', '3');
+    line.setAttribute('stroke-width', String(indicatorWidth));
     line.setAttribute('stroke-linecap', 'round');
     group.appendChild(line);
 
-    // Indicator dot at the end
-    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    dot.setAttribute('cx', String(center));
-    dot.setAttribute('cy', String(center - indicatorLength + 2));
-    dot.setAttribute('r', '4');
-    dot.setAttribute('fill', this.options.indicatorColor);
-    group.appendChild(dot);
-
     // Set transform origin
     group.style.transformOrigin = `${center}px ${center}px`;
-
-    return group;
-  }
-
-  /**
-   * Create center glow effect
-   */
-  private createGlow(padding: number): SVGGElement {
-    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    const center = this.size / 2 + padding;
-    const radius = this.size * 0.15;
-
-    // Glow circle
-    const glow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    glow.setAttribute('cx', String(center));
-    glow.setAttribute('cy', String(center));
-    glow.setAttribute('r', String(radius));
-    glow.setAttribute('fill', this.options.glowColor);
-    glow.setAttribute('filter', `url(#${this.glowFilterId})`);
-    glow.setAttribute('opacity', '0.8');
-    group.appendChild(glow);
-
-    // Inner bright spot
-    const spot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    spot.setAttribute('cx', String(center));
-    spot.setAttribute('cy', String(center));
-    spot.setAttribute('r', String(radius * 0.5));
-    spot.setAttribute('fill', this.lightenColor(this.options.glowColor, 50));
-    group.appendChild(spot);
-
-    return group;
-  }
-
-  /**
-   * Create power indicator for toggleable knobs
-   */
-  private createPowerIndicator(padding: number): SVGGElement {
-    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    const center = this.size / 2 + padding;
-    const y = center + this.size * 0.5;
-
-    // Power LED
-    const led = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    led.setAttribute('cx', String(center));
-    led.setAttribute('cy', String(y));
-    led.setAttribute('r', '4');
-    led.setAttribute('fill', '#00ff00');
-    led.setAttribute('class', 'power-led');
-    group.appendChild(led);
 
     return group;
   }

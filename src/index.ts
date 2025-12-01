@@ -28,7 +28,6 @@ export {
   KnobOptions,
   KnobMode,
   KnobChangeEvent,
-  KnobToggleEvent,
   IKnob,
   DEFAULT_OPTIONS,
   GlobalConfig,
@@ -101,24 +100,6 @@ export function createMinOnlyKnob(
     mode: 'min-only',
     min: 0,
     showValueLabels: false,
-    ...options,
-  });
-}
-
-/**
- * Create a toggleable power knob with glow effect
- */
-export function createPowerKnob(
-  container: HTMLElement | string,
-  options: Partial<KnobOptions> = {}
-): Knob {
-  return new Knob(container, {
-    mode: 'bounded',
-    min: 0,
-    max: 10,
-    toggleable: true,
-    glow: true,
-    glowColor: '#ff6600',
     ...options,
   });
 }

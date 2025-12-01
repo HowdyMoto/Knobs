@@ -74,18 +74,6 @@ export interface KnobOptions {
   /** Override global ctrlMultiplier for this knob */
   ctrlMultiplier?: number;
 
-  /** Enable toggle on/off functionality on click */
-  toggleable?: boolean;
-
-  /** Initial power state if toggleable */
-  powered?: boolean;
-
-  /** Enable glow effect from center */
-  glow?: boolean;
-
-  /** Glow color (CSS color string) */
-  glowColor?: string;
-
   /** Label text displayed on the knob */
   label?: string;
 
@@ -94,6 +82,9 @@ export interface KnobOptions {
 
   /** Custom value labels (e.g., ['0', '1', '2', ..., '10', '11']) */
   valueLabels?: string[];
+
+  /** Show tick marks around the dial (default true) */
+  showTicks?: boolean;
 
   /** Number of tick marks around the dial */
   tickCount?: number;
@@ -104,8 +95,14 @@ export interface KnobOptions {
   /** Color of the dial/indicator */
   dialColor?: string;
 
-  /** Color of the indicator line/dot */
+  /** Color of the indicator line */
   indicatorColor?: string;
+
+  /** Length of the indicator line as a fraction of knob radius (0-1, default 0.7) */
+  indicatorLength?: number;
+
+  /** Width of the indicator line in pixels (default 3) */
+  indicatorWidth?: number;
 
   /** Color of the tick marks */
   tickColor?: string;
@@ -133,23 +130,6 @@ export interface KnobChangeEvent {
   /** Current rotation angle in degrees */
   angle: number;
 
-  /** Whether the knob is powered on (if toggleable) */
-  powered: boolean;
-
-  /** Reference to the Knob instance */
-  knob: IKnob;
-}
-
-/**
- * Event data emitted when toggle state changes
- */
-export interface KnobToggleEvent {
-  /** Whether the knob is now powered on */
-  powered: boolean;
-
-  /** Current value */
-  value: number;
-
   /** Reference to the Knob instance */
   knob: IKnob;
 }
@@ -164,15 +144,6 @@ export interface IKnob {
   /** Set value programmatically */
   setValue(value: number): void;
 
-  /** Get power state */
-  isPowered(): boolean;
-
-  /** Set power state */
-  setPowered(powered: boolean): void;
-
-  /** Toggle power state */
-  toggle(): void;
-
   /** Destroy the knob and clean up event listeners */
   destroy(): void;
 
@@ -182,11 +153,8 @@ export interface IKnob {
   /** Add event listener for value changes */
   onChange(callback: (event: KnobChangeEvent) => void): void;
 
-  /** Add event listener for toggle changes */
-  onToggle(callback: (event: KnobToggleEvent) => void): void;
-
   /** Remove event listener */
-  off(event: 'change' | 'toggle', callback: Function): void;
+  off(event: 'change', callback: Function): void;
 }
 
 /**
@@ -199,16 +167,15 @@ export const DEFAULT_OPTIONS = {
   size: 80,
   startAngle: -135,  // 7 o'clock position
   endAngle: 135,     // 5 o'clock position
-  toggleable: false,
-  powered: true,
-  glow: false,
-  glowColor: '#ff6600',
   label: '',
   showValueLabels: true,
+  showTicks: true,
   tickCount: 11,
   backgroundColor: '#2a2a2a',
   dialColor: '#1a1a1a',
   indicatorColor: '#ffffff',
+  indicatorLength: 0.7,
+  indicatorWidth: 3,
   tickColor: '#888888',
   labelColor: '#cccccc',
   fontFamily: 'Arial, sans-serif',

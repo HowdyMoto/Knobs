@@ -185,25 +185,6 @@
     </div>
   </div>
 
-  <!-- Toggleable with Glow -->
-  <div class="demo-section">
-    <h2>Toggleable Power Knobs with Glow (Click to Toggle)</h2>
-    <div class="knob-row">
-      <div class="knob-container">
-        <div id="power-knob-1"></div>
-        <div class="value-display" id="power-value-1">OFF</div>
-      </div>
-      <div class="knob-container">
-        <div id="power-knob-2"></div>
-        <div class="value-display" id="power-value-2">ON: 7</div>
-      </div>
-      <div class="knob-container">
-        <div id="power-knob-3"></div>
-        <div class="value-display" id="power-value-3">ON: 3</div>
-      </div>
-    </div>
-  </div>
-
   <!-- Infinite Rotation -->
   <div class="demo-section">
     <h2>Infinite Rotation (No Min/Max)</h2>
@@ -257,7 +238,6 @@
       <li><strong>Drag up/down</strong> - Click and drag vertically to adjust the value</li>
       <li><strong>Hold <code>Shift</code></strong> - Move faster (5x speed)</li>
       <li><strong>Hold <code>Ctrl</code></strong> - Move slower (fine adjustment)</li>
-      <li><strong>Click</strong> - Toggle power on/off (for toggleable knobs)</li>
       <li><strong>Touch</strong> - Works on mobile devices too!</li>
     </ul>
   </div>
@@ -266,7 +246,6 @@
     import {
       Knob,
       createSpinalTapKnob,
-      createPowerKnob,
       createInfiniteKnob,
       createMinOnlyKnob,
       createPanKnob,
@@ -284,7 +263,7 @@
 
     // Guitar Amp Knobs
     const ampOptions = {
-      size: 70,
+      size: 128,
       backgroundColor: '#1a1a1a',
       dialColor: '#0a0a0a',
       indicatorColor: '#f0f0f0',
@@ -303,42 +282,6 @@
     midKnob.onChange(e => document.getElementById('mid-value').textContent = e.value.toFixed(0));
     trebleKnob.onChange(e => document.getElementById('treble-value').textContent = e.value.toFixed(0));
     volumeKnob.onChange(e => document.getElementById('volume-value').textContent = e.value.toFixed(0));
-
-    // Power Knobs with Glow
-    const powerKnob1 = createPowerKnob('#power-knob-1', {
-      label: 'Drive',
-      powered: false,
-      value: 5,
-      glowColor: '#ff3300'
-    });
-    const powerKnob2 = createPowerKnob('#power-knob-2', {
-      label: 'Overdrive',
-      powered: true,
-      value: 7,
-      glowColor: '#ff6600'
-    });
-    const powerKnob3 = createPowerKnob('#power-knob-3', {
-      label: 'Boost',
-      powered: true,
-      value: 3,
-      glowColor: '#00ff66'
-    });
-
-    function updatePowerDisplay(id, knob) {
-      const display = document.getElementById(id);
-      if (knob.isPowered()) {
-        display.textContent = `ON: ${knob.getValue().toFixed(0)}`;
-      } else {
-        display.textContent = 'OFF';
-      }
-    }
-
-    powerKnob1.onChange(() => updatePowerDisplay('power-value-1', powerKnob1));
-    powerKnob1.onToggle(() => updatePowerDisplay('power-value-1', powerKnob1));
-    powerKnob2.onChange(() => updatePowerDisplay('power-value-2', powerKnob2));
-    powerKnob2.onToggle(() => updatePowerDisplay('power-value-2', powerKnob2));
-    powerKnob3.onChange(() => updatePowerDisplay('power-value-3', powerKnob3));
-    powerKnob3.onToggle(() => updatePowerDisplay('power-value-3', powerKnob3));
 
     // Infinite Knobs
     const infiniteKnob1 = createInfiniteKnob('#infinite-knob-1', {
@@ -431,7 +374,6 @@
     console.log('🎛️ Knobs Demo Loaded!');
     console.log('Knobs available:', {
       gainKnob, bassKnob, midKnob, trebleKnob, volumeKnob,
-      powerKnob1, powerKnob2, powerKnob3,
       infiniteKnob1, infiniteKnob2,
       minOnlyKnob,
       ch1Pan, ch1Freq, ch1Gain,
