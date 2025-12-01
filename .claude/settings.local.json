@@ -4,7 +4,8 @@
       "Bash(tree:*)",
       "Bash(cat:*)",
       "Bash(npm run build:*)",
-      "Bash(npm install)"
+      "Bash(npm install)",
+      "Bash(npm run examples:*)"
     ],
     "deny": [],
     "ask": []
