@@ -6,13 +6,15 @@
   "module": "dist/knobs.esm.js",
   "types": "dist/knobs.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "examples"
   ],
   "scripts": {
     "build": "tsc && npm run bundle",
     "bundle": "esbuild src/index.ts --bundle --outfile=dist/knobs.js --format=iife --global-name=Knobs && esbuild src/index.ts --bundle --outfile=dist/knobs.esm.js --format=esm",
     "dev": "tsc --watch",
-    "serve": "http-server . -p 8080 -o demo.html"
+    "serve": "http-server . -p 8080 -o demo.html",
+    "examples": "http-server . -p 8080 -o examples/index.html"
   },
   "keywords": [
     "knob",

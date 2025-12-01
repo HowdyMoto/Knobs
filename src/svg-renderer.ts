@@ -277,21 +277,71 @@ export class SVGRenderer {
     const center = this.size / 2 + padding;
     const radius = this.size * 0.35;
 
-    // Calculate indicator dimensions from options
-    const indicatorLength = this.options.indicatorLength; // 0-1 fraction of radius
-    const indicatorWidth = this.options.indicatorWidth;
+    if (this.options.gripBumps) {
+      // Encoder style: notched/bumpy edge dial
+      const bumpCount = this.options.gripBumpCount;
+      const bumpDepth = radius * 0.15;
+      const innerRadius = radius - bumpDepth;
 
-    // Indicator line - extends from inner point to near edge of knob
-    const innerDistance = radius * (1 - indicatorLength);
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', String(center));
-    line.setAttribute('y1', String(center - innerDistance));
-    line.setAttribute('x2', String(center));
-    line.setAttribute('y2', String(center - radius + 2)); // Ends near edge of knob
-    line.setAttribute('stroke', this.options.indicatorColor);
-    line.setAttribute('stroke-width', String(indicatorWidth));
-    line.setAttribute('stroke-linecap', 'round');
-    group.appendChild(line);
+      // Build a path with notches around the edge
+      let pathData = '';
+      for (let i = 0; i < bumpCount; i++) {
+        const startAngle = (360 / bumpCount) * i;
+        const midAngle = startAngle + (360 / bumpCount) * 0.5;
+        const endAngle = startAngle + (360 / bumpCount);
+
+        const startRad = (startAngle - 90) * (Math.PI / 180);
+        const midRad = (midAngle - 90) * (Math.PI / 180);
+        const endRad = (endAngle - 90) * (Math.PI / 180);
+
+        // Outer point (bump peak)
+        const outerX = center + Math.cos(startRad) * radius;
+        const outerY = center + Math.sin(startRad) * radius;
+
+        // Inner point (notch valley)
+        const innerX = center + Math.cos(midRad) * innerRadius;
+        const innerY = center + Math.sin(midRad) * innerRadius;
+
+        // Next outer point
+        const nextOuterX = center + Math.cos(endRad) * radius;
+        const nextOuterY = center + Math.sin(endRad) * radius;
+
+        if (i === 0) {
+          pathData = `M ${outerX} ${outerY}`;
+        }
+        pathData += ` L ${innerX} ${innerY} L ${nextOuterX} ${nextOuterY}`;
+      }
+      pathData += ' Z';
+
+      const bumpyDial = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      bumpyDial.setAttribute('d', pathData);
+      bumpyDial.setAttribute('fill', this.options.dialColor);
+      group.appendChild(bumpyDial);
+
+      // Add a center circle for depth effect
+      const centerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      centerCircle.setAttribute('cx', String(center));
+      centerCircle.setAttribute('cy', String(center));
+      centerCircle.setAttribute('r', String(innerRadius * 0.7));
+      centerCircle.setAttribute('fill', this.lightenColor(this.options.dialColor, 15));
+      group.appendChild(centerCircle);
+
+    } else {
+      // Standard style: indicator line
+      const indicatorLength = this.options.indicatorLength;
+      const indicatorWidth = this.options.indicatorWidth;
+
+      const innerDistance = radius * (1 - indicatorLength);
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', String(center));
+      line.setAttribute('y1', String(center - innerDistance));
+      line.setAttribute('x2', String(center));
+      line.setAttribute('y2', String(center - radius + 2));
+      line.setAttribute('stroke', this.options.indicatorColor);
+      line.setAttribute('stroke-width', String(indicatorWidth));
+      line.setAttribute('stroke-linecap', 'round');
+      group.appendChild(line);
+    }
 
     // Set transform origin
     group.style.transformOrigin = `${center}px ${center}px`;

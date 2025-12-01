@@ -8,8 +8,7 @@ Rotatable knob controls for audio/music web applications — like guitar amps an
 
 - **Multiple Modes**: Bounded (min/max), infinite rotation, or minimum-only
 - **Spinal Tap Mode**: Goes to 11!
-- **Toggleable Power**: Click to turn on/off with glow effects
-- **Fully Customizable**: Colors, sizes, tick marks, labels, and more
+- **Fully Customizable**: Colors, sizes, tick marks, labels, indicator styling, and more
 - **Touch Support**: Works on mobile devices
 - **Modifier Keys**: Hold Shift for fast movement, Ctrl for fine adjustment
 - **TypeScript**: Full type definitions included
@@ -20,6 +19,16 @@ Rotatable knob controls for audio/music web applications — like guitar amps an
 ```bash
 npm install knobs
 ```
+
+## Live Examples
+
+Run the interactive examples locally:
+
+```bash
+npm run examples
+```
+
+Or view [examples/index.html](examples/index.html) — each example shows a live demo alongside its source code.
 
 ## Quick Start
 
@@ -132,51 +141,9 @@ console.log(master.getValue()); // 5
 
 ---
 
-### Intermediate: Power Knobs with Glow
-
-Create toggleable effect pedals with visual feedback.
-
-```javascript
-import { createPowerKnob } from 'knobs';
-
-const drive = createPowerKnob('#drive', {
-  label: 'Drive',
-  powered: false,        // Start in off state
-  value: 7,
-  glowColor: '#ff3300'   // Red glow when active
-});
-
-const chorus = createPowerKnob('#chorus', {
-  label: 'Chorus',
-  powered: true,
-  value: 4,
-  glowColor: '#00ff66'   // Green glow when active
-});
-
-// Handle value changes
-drive.onChange((e) => {
-  if (e.powered) {
-    setDriveAmount(e.value);
-  }
-});
-
-// Handle toggle events
-drive.onToggle((e) => {
-  console.log('Drive is now:', e.powered ? 'ON' : 'OFF');
-  toggleDriveEffect(e.powered);
-});
-
-// Programmatic control
-drive.toggle();              // Toggle power state
-drive.setPowered(true);      // Turn on
-console.log(drive.isPowered()); // true
-```
-
----
-
 ### Intermediate: Infinite Rotation Encoder
 
-For values that can increase or decrease without limit, like a jog wheel or scrolling encoder.
+For values that can increase or decrease without limit, like a jog wheel or scrolling encoder. Use `gripBumps: true` for an encoder-style knob with notched edges that make rotation easy to see.
 
 ```javascript
 import { createInfiniteKnob } from 'knobs';
@@ -184,8 +151,9 @@ import { createInfiniteKnob } from 'knobs';
 const encoder = createInfiniteKnob('#encoder', {
   label: 'Scroll',
   size: 80,
-  dialColor: '#2a4a6a',
-  indicatorColor: '#4ecdc4'
+  backgroundColor: '#1a1a1a',
+  dialColor: '#0a0a0a',
+  gripBumps: true  // Bumpy edge instead of indicator line
 });
 
 let position = 0;
@@ -366,21 +334,25 @@ new Knob(container: HTMLElement | string, options?: KnobOptions)
 | `size` | `number` | `80` | Knob size in pixels |
 | `startAngle` | `number` | `-135` | Start angle in degrees (bounded mode) |
 | `endAngle` | `number` | `135` | End angle in degrees (bounded mode) |
-| `toggleable` | `boolean` | `false` | Enable click to toggle power |
-| `powered` | `boolean` | `true` | Initial power state |
-| `glow` | `boolean` | `false` | Enable center glow effect |
-| `glowColor` | `string` | `'#ff6600'` | Glow color (CSS color) |
 | `label` | `string` | `''` | Label text below knob |
 | `showValueLabels` | `boolean` | `true` | Show value labels around dial |
 | `valueLabels` | `string[]` | - | Custom value labels |
+| `showTicks` | `boolean` | `true` | Show tick marks around dial |
 | `tickCount` | `number` | `11` | Number of tick marks |
 | `backgroundColor` | `string` | `'#2a2a2a'` | Knob body color |
 | `dialColor` | `string` | `'#1a1a1a'` | Dial color |
 | `indicatorColor` | `string` | `'#ffffff'` | Indicator line color |
+| `indicatorLength` | `number` | `0.7` | Indicator length (0-1 fraction of radius) |
+| `indicatorWidth` | `number` | `3` | Indicator line width in pixels |
+| `gripBumps` | `boolean` | `false` | Show bumpy/notched edge instead of indicator line (encoder style) |
+| `gripBumpCount` | `number` | `20` | Number of bumps around edge when gripBumps is true |
 | `tickColor` | `string` | `'#888888'` | Tick mark color |
 | `labelColor` | `string` | `'#cccccc'` | Label text color |
 | `fontFamily` | `string` | `'Arial, sans-serif'` | Font for labels |
 | `className` | `string` | - | Custom CSS class |
+| `pixelsPerFullRotation` | `number` | `400` | Override global drag sensitivity |
+| `shiftMultiplier` | `number` | `4` | Override global Shift speed |
+| `ctrlMultiplier` | `number` | `0.25` | Override global Ctrl speed |
 
 #### Methods
 
@@ -388,12 +360,8 @@ new Knob(container: HTMLElement | string, options?: KnobOptions)
 |--------|-------------|
 | `getValue(): number` | Get current value |
 | `setValue(value: number): void` | Set value programmatically |
-| `isPowered(): boolean` | Get power state |
-| `setPowered(powered: boolean): void` | Set power state |
-| `toggle(): void` | Toggle power state |
 | `onChange(callback): void` | Subscribe to value changes |
-| `onToggle(callback): void` | Subscribe to power toggle |
-| `off(event, callback): void` | Unsubscribe from events |
+| `off('change', callback): void` | Unsubscribe from events |
 | `getElement(): HTMLElement` | Get container element |
 | `destroy(): void` | Clean up and remove |
 
@@ -405,17 +373,7 @@ new Knob(container: HTMLElement | string, options?: KnobOptions)
   value: number;          // New value
   previousValue: number;  // Previous value
   angle: number;          // Rotation angle in degrees
-  powered: boolean;       // Power state
-  knob: Knob;            // Knob instance
-}
-```
-
-**`onToggle(event)`**
-```typescript
-{
-  powered: boolean;  // New power state
-  value: number;     // Current value
-  knob: Knob;       // Knob instance
+  knob: Knob;             // Knob instance
 }
 ```
 
@@ -427,7 +385,6 @@ new Knob(container: HTMLElement | string, options?: KnobOptions)
 | `createSpinalTapKnob(container, options?)` | Goes to 11! |
 | `createInfiniteKnob(container, options?)` | No bounds, rotates forever |
 | `createMinOnlyKnob(container, options?)` | Has minimum, no maximum |
-| `createPowerKnob(container, options?)` | Toggleable with glow |
 | `createPanKnob(container, options?)` | -100 to +100, centered |
 | `createFrequencyKnob(container, options?)` | 20Hz to 20kHz labels |
 
@@ -450,7 +407,6 @@ configureKnobs({
 - **Drag up/down**: Adjust value
 - **Shift + drag**: Fast adjustment (4x default)
 - **Ctrl + drag**: Fine adjustment (0.25x default)
-- **Click**: Toggle power (if toggleable)
 - **Touch**: Full touch support for mobile
 
 ## License

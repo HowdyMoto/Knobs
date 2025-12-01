@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knobs Examples - Interactive Documentation</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      padding: 40px 20px;
+      text-align: center;
+      border-bottom: 1px solid #30363d;
+    }
+
+    header h1 {
+      margin: 0 0 10px 0;
+      font-size: 2.5rem;
+      font-weight: 300;
+      letter-spacing: 3px;
+    }
+
+    header p {
+      margin: 0;
+      color: #8b949e;
+      font-size: 1.1rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .example {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      margin: 40px 0;
+      overflow: hidden;
+    }
+
+    .example-header {
+      padding: 20px 25px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .example-header h2 {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 500;
+    }
+
+    .example-header .difficulty {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .example-header .basic { background: #238636; color: #fff; }
+    .example-header .intermediate { background: #9e6a03; color: #fff; }
+    .example-header .advanced { background: #da3633; color: #fff; }
+
+    .example-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 900px) {
+      .example-content {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .example-demo {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #0d1117;
+      min-height: 200px;
+    }
+
+    .example-code {
+      border-left: 1px solid #30363d;
+      overflow: auto;
+      max-height: 500px;
+    }
+
+    @media (max-width: 900px) {
+      .example-code {
+        border-left: none;
+        border-top: 1px solid #30363d;
+      }
+    }
+
+    .example-code pre {
+      margin: 0;
+      padding: 20px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .example-code code {
+      font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+    }
+
+    .demo-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .knob-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .value-display {
+      margin-top: 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      color: #4ecdc4;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 4px 12px;
+      border-radius: 4px;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    /* Amp panel styling */
+    .amp-panel {
+      background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+      border: 2px solid #444;
+      border-radius: 8px;
+      padding: 25px 35px;
+      box-shadow:
+        inset 0 2px 4px rgba(255, 255, 255, 0.1),
+        0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .amp-panel h3 {
+      text-align: center;
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      color: #c9a227;
+      margin: 0 0 20px 0;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Mixer styling */
+    .mixer-channel {
+      background: linear-gradient(180deg, #333 0%, #222 100%);
+      border: 1px solid #555;
+      border-radius: 4px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .channel-label {
+      font-size: 11px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .mixer-values {
+      font-size: 10px;
+      color: #4ecdc4;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* Description text */
+    .example-description {
+      padding: 15px 25px;
+      color: #8b949e;
+      border-bottom: 1px solid #30363d;
+      font-size: 0.95rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #8b949e;
+      border-top: 1px solid #30363d;
+      margin-top: 60px;
+    }
+
+    footer a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>KNOBS</h1>
+    <p>Interactive examples with live demos and source code</p>
+  </header>
+
+  <div class="container">
+    <!-- Example 1: Simple Volume -->
+    <section class="example" id="simple-volume">
+      <div class="example-header">
+        <h2>Simple Volume Knob</h2>
+        <span class="difficulty basic">Basic</span>
+      </div>
+      <div class="example-description">
+        A standard 0-10 volume control. Drag up/down to adjust. The most basic usage of the Knob class.
+      </div>
+      <div class="example-content">
+        <div class="example-demo">
+          <div class="knob-wrapper">
+            <div id="ex1-volume"></div>
+            <div class="value-display" id="ex1-value">5.0</div>
+          </div>
+        </div>
+        <div class="example-code">
+          <pre><code class="language-javascript">import { Knob } from 'knobs';
+
+const volume = new Knob('#volume', {
+  mode: 'bounded',
+  min: 0,
+  max: 10,
+  value: 5,
+  step: 0.1,
+  label: 'Volume'
+});
+
+volume.onChange((e) => {
+  console.log('Volume:', e.value);
+});</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Example 2: Factory Functions -->
+    <section class="example" id="factory-functions">
+      <div class="example-header">
+        <h2>Factory Functions</h2>
+        <span class="difficulty basic">Basic</span>
+      </div>
+      <div class="example-description">
+        Pre-configured factory functions for common knob types: volume, pan (L/R), and frequency.
+      </div>
+      <div class="example-content">
+        <div class="example-demo">
+          <div class="demo-row">
+            <div class="knob-wrapper">
+              <div id="ex2-volume"></div>
+              <div class="value-display" id="ex2-vol-value">5.0</div>
+            </div>
+            <div class="knob-wrapper">
+              <div id="ex2-pan"></div>
+              <div class="value-display" id="ex2-pan-value">C</div>
+            </div>
+            <div class="knob-wrapper">
+              <div id="ex2-freq"></div>
+              <div class="value-display" id="ex2-freq-value">50</div>
+            </div>
+          </div>
+        </div>
+        <div class="example-code">
+          <pre><code class="language-javascript">import {
+  createVolumeKnob,
+  createPanKnob,
+  createFrequencyKnob
+} from 'knobs';
+
+// Standard 0-10 volume knob
+const volume = createVolumeKnob('#volume', {
+  label: 'Master'
+});
+
+// Pan: -100 (L) to +100 (R), centered at 0
+const pan = createPanKnob('#pan');
+
+// Frequency: labeled 20Hz to 20kHz
+const freq = createFrequencyKnob('#eq', {
+  label: 'EQ'
+});</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Example 3: Guitar Amp -->
+    <section class="example" id="guitar-amp">
+      <div class="example-header">
+        <h2>Guitar Amp Panel</h2>
+        <span class="difficulty intermediate">Intermediate</span>
+      </div>
+      <div class="example-description">
+        A vintage-looking guitar amp control panel using Spinal Tap knobs (they go to 11!). Custom styling applied to all knobs.
+      </div>
+      <div class="example-content">
+        <div class="example-demo">
+          <div class="amp-panel">
+            <h3>VINTAGE AMP</h3>
+            <div class="demo-row">
+              <div class="knob-wrapper">
+                <div id="ex3-gain"></div>
+                <div class="value-display" id="ex3-gain-value">5</div>
+              </div>
+              <div class="knob-wrapper">
+                <div id="ex3-bass"></div>
+                <div class="value-display" id="ex3-bass-value">5</div>
+              </div>
+              <div class="knob-wrapper">
+                <div id="ex3-mid"></div>
+                <div class="value-display" id="ex3-mid-value">5</div>
+              </div>
+              <div class="knob-wrapper">
+                <div id="ex3-treble"></div>
+                <div class="value-display" id="ex3-treble-value">5</div>
+              </div>
+              <div class="knob-wrapper">
+                <div id="ex3-master"></div>
+                <div class="value-display" id="ex3-master-value">5</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="example-code">
+          <pre><code class="language-javascript">import { createSpinalTapKnob } from 'knobs';
+
+const ampStyle = {
+  size: 60,
+  backgroundColor: '#1a1a1a',
+  dialColor: '#0a0a0a',
+  indicatorColor: '#f0f0f0',
+  tickColor: '#666',
+  labelColor: '#999'
+};
+
+const gain = createSpinalTapKnob('#gain', {
+  ...ampStyle,
+  label: 'Gain',
+  value: 5
+});
+
+const bass = createSpinalTapKnob('#bass', {
+  ...ampStyle,
+  label: 'Bass',
+  value: 5
+});
+
+// These go to 11!
+console.log(gain.getValue()); // 5</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Example 4: Infinite Encoder -->
+    <section class="example" id="infinite-encoder">
+      <div class="example-header">
+        <h2>Infinite Rotation Encoder</h2>
+        <span class="difficulty intermediate">Intermediate</span>
+      </div>
+      <div class="example-description">
+        Knobs without bounds - they rotate forever in either direction. Great for jog wheels, scrolling, or accumulating values.
+      </div>
+      <div class="example-content">
+        <div class="example-demo">
+          <div class="demo-row">
+            <div class="knob-wrapper">
+              <div id="ex5-encoder1"></div>
+              <div class="value-display" id="ex5-enc1-value">0.0</div>
+            </div>
+            <div class="knob-wrapper">
+              <div id="ex5-encoder2"></div>
+              <div class="value-display" id="ex5-enc2-value">0.0</div>
+            </div>
+          </div>
+        </div>
+        <div class="example-code">
+          <pre><code class="language-javascript">import { createInfiniteKnob } from 'knobs';
+
+const encoder = createInfiniteKnob('#encoder', {
+  label: 'Scroll',
+  size: 80,
+  backgroundColor: '#1a1a1a',
+  dialColor: '#0a0a0a',
+  gripBumps: true  // Bumpy edge instead of indicator line
+});
+
+let position = 0;
+
+encoder.onChange((e) => {
+  // Value continuously increases/decreases
+  const delta = e.value - e.previousValue;
+  position += delta;
+  scrollToPosition(position);
+});</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Example 5: Mixer Channel -->
+    <section class="example" id="mixer-channel">
+      <div class="example-header">
+        <h2>Mixer Channel Strip</h2>
+        <span class="difficulty advanced">Advanced</span>
+      </div>
+      <div class="example-description">
+        A complete mixing console channel with pan, EQ, and gain controls. Demonstrates combining multiple knobs into a reusable component.
+      </div>
+      <div class="example-content">
+        <div class="example-demo">
+          <div class="demo-row">
+            <div class="mixer-channel">
+              <span class="channel-label">CH 1</span>
+              <div id="ex6-ch1-pan"></div>
+              <div id="ex6-ch1-eq"></div>
+              <div id="ex6-ch1-gain"></div>
+              <div class="mixer-values" id="ex6-ch1-values">Pan: C<br>EQ: 50<br>Gain: 0</div>
+            </div>
+            <div class="mixer-channel">
+              <span class="channel-label">CH 2</span>
+              <div id="ex6-ch2-pan"></div>
+              <div id="ex6-ch2-eq"></div>
+              <div id="ex6-ch2-gain"></div>
+              <div class="mixer-values" id="ex6-ch2-values">Pan: C<br>EQ: 50<br>Gain: 0</div>
+            </div>
+          </div>
+        </div>
+        <div class="example-code">
+          <pre><code class="language-javascript">import {
+  Knob,
+  createPanKnob,
+  createFrequencyKnob
+} from 'knobs';
+
+function createChannel(id) {
+  const style = { size: 45 };
+
+  const pan = createPanKnob(`#${id}-pan`, {
+    ...style, label: 'Pan'
+  });
+
+  const eq = createFrequencyKnob(`#${id}-eq`, {
+    ...style, label: 'EQ'
+  });
+
+  const gain = new Knob(`#${id}-gain`, {
+    ...style,
+    mode: 'bounded',
+    min: -20,
+    max: 20,
+    value: 0,
+    step: 0.5,
+    label: 'Gain',
+    tickCount: 5,
+    valueLabels: ['-20', '', '0', '', '+20']
+  });
+
+  return { pan, eq, gain };
+}
+
+const ch1 = createChannel('ch1');
+const ch2 = createChannel('ch2');</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Example 6: Global Config -->
+    <section class="example" id="global-config">
+      <div class="example-header">
+        <h2>Global Configuration</h2>
+        <span class="difficulty advanced">Advanced</span>
+      </div>
+      <div class="example-description">
+        Configure default sensitivity settings for all knobs. The left knob uses defaults, the right one overrides for finer control.
+      </div>
+      <div class="example-content">
+        <div class="example-demo">
+          <div class="demo-row">
+            <div class="knob-wrapper">
+              <div id="ex7-normal"></div>
+              <div class="value-display" id="ex7-normal-value">50</div>
+            </div>
+            <div class="knob-wrapper">
+              <div id="ex7-precise"></div>
+              <div class="value-display" id="ex7-precise-value">50</div>
+            </div>
+          </div>
+        </div>
+        <div class="example-code">
+          <pre><code class="language-javascript">import { configureKnobs, Knob } from 'knobs';
+
+// Set global defaults
+configureKnobs({
+  pixelsPerFullRotation: 300,
+  shiftMultiplier: 5,
+  ctrlMultiplier: 0.2
+});
+
+// Uses global settings
+const normal = new Knob('#normal', {
+  mode: 'bounded',
+  min: 0,
+  max: 100,
+  value: 50,
+  label: 'Normal'
+});
+
+// Override for more precision
+const precise = new Knob('#precise', {
+  mode: 'bounded',
+  min: 0,
+  max: 100,
+  value: 50,
+  label: 'Precise',
+  pixelsPerFullRotation: 600,
+  ctrlMultiplier: 0.1
+});</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- Example 7: Programmatic Control -->
+    <section class="example" id="programmatic">
+      <div class="example-header">
+        <h2>Programmatic Control</h2>
+        <span class="difficulty advanced">Advanced</span>
+      </div>
+      <div class="example-description">
+        Control knobs from code. Click the buttons to see programmatic value changes and animations.
+      </div>
+      <div class="example-content">
+        <div class="example-demo">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+            <div class="knob-wrapper">
+              <div id="ex8-knob"></div>
+              <div class="value-display" id="ex8-value">0</div>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+              <button id="ex8-set-min" style="padding: 8px 16px; cursor: pointer;">Set Min</button>
+              <button id="ex8-set-mid" style="padding: 8px 16px; cursor: pointer;">Set 50%</button>
+              <button id="ex8-set-max" style="padding: 8px 16px; cursor: pointer;">Set Max</button>
+              <button id="ex8-sweep" style="padding: 8px 16px; cursor: pointer;">Sweep</button>
+            </div>
+          </div>
+        </div>
+        <div class="example-code">
+          <pre><code class="language-javascript">import { Knob } from 'knobs';
+
+const knob = new Knob('#cutoff', {
+  mode: 'bounded',
+  min: 0,
+  max: 100,
+  value: 0,
+  label: 'Cutoff'
+});
+
+// Get/set values
+console.log(knob.getValue()); // 0
+knob.setValue(50);
+
+// Animate a sweep
+function sweep(from, to, duration) {
+  const start = performance.now();
+
+  function animate(time) {
+    const progress = Math.min(
+      (time - start) / duration, 1
+    );
+    const value = from + (to - from) * progress;
+    knob.setValue(value);
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    }
+  }
+
+  requestAnimationFrame(animate);
+}
+
+sweep(0, 100, 1000); // 1 second sweep</code></pre>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p>
+      <strong>Knobs</strong> - Rotatable knob controls for audio/music web applications
+      <br>
+      <a href="https://github.com/wbagwell/knobs">GitHub</a> &middot; MIT License
+    </p>
+  </footer>
+
+  <!-- Syntax highlighting -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+
+  <!-- Initialize all examples -->
+  <script type="module">
+    import {
+      Knob,
+      configureKnobs,
+      createVolumeKnob,
+      createPanKnob,
+      createFrequencyKnob,
+      createSpinalTapKnob,
+      createInfiniteKnob
+    } from '../dist/knobs.esm.js';
+
+    // Example 1: Simple Volume
+    const ex1Volume = new Knob('#ex1-volume', {
+      mode: 'bounded',
+      min: 0,
+      max: 10,
+      value: 5,
+      step: 0.1,
+      label: 'Volume'
+    });
+    ex1Volume.onChange(e => {
+      document.getElementById('ex1-value').textContent = e.value.toFixed(1);
+    });
+
+    // Example 2: Factory Functions
+    const ex2Volume = createVolumeKnob('#ex2-volume', { label: 'Master', size: 60 });
+    const ex2Pan = createPanKnob('#ex2-pan', { size: 60 });
+    const ex2Freq = createFrequencyKnob('#ex2-freq', { label: 'EQ', size: 60 });
+
+    ex2Volume.onChange(e => {
+      document.getElementById('ex2-vol-value').textContent = e.value.toFixed(1);
+    });
+    ex2Pan.onChange(e => {
+      const v = e.value;
+      document.getElementById('ex2-pan-value').textContent = v === 0 ? 'C' : (v < 0 ? `L${Math.abs(v)}` : `R${v}`);
+    });
+    ex2Freq.onChange(e => {
+      document.getElementById('ex2-freq-value').textContent = e.value;
+    });
+
+    // Example 3: Guitar Amp
+    const ampStyle = {
+      size: 55,
+      backgroundColor: '#FF1a1a00',
+      dialColor: '#0a0a0a',
+      indicatorColor: '#f0f0f0',
+      tickColor: '#666',
+      labelColor: '#999'
+    };
+
+    const ex3Gain = createSpinalTapKnob('#ex3-gain', { ...ampStyle, label: 'Gain', value: 5 });
+    const ex3Bass = createSpinalTapKnob('#ex3-bass', { ...ampStyle, label: 'Bass', value: 5 });
+    const ex3Mid = createSpinalTapKnob('#ex3-mid', { ...ampStyle, label: 'Mid', value: 5 });
+    const ex3Treble = createSpinalTapKnob('#ex3-treble', { ...ampStyle, label: 'Treble', value: 5 });
+    const ex3Master = createSpinalTapKnob('#ex3-master', { ...ampStyle, label: 'Master', value: 5 });
+
+    ex3Gain.onChange(e => document.getElementById('ex3-gain-value').textContent = e.value.toFixed(0));
+    ex3Bass.onChange(e => document.getElementById('ex3-bass-value').textContent = e.value.toFixed(0));
+    ex3Mid.onChange(e => document.getElementById('ex3-mid-value').textContent = e.value.toFixed(0));
+    ex3Treble.onChange(e => document.getElementById('ex3-treble-value').textContent = e.value.toFixed(0));
+    ex3Master.onChange(e => document.getElementById('ex3-master-value').textContent = e.value.toFixed(0));
+
+    // Example 4: Infinite Encoders
+    const encoderStyle = {
+      size: 75,
+      backgroundColor: '#1a1a1a',
+      dialColor: '#0a0a0a',
+      gripBumps: true  // Bumpy edge instead of indicator line
+    };
+    const ex5Enc1 = createInfiniteKnob('#ex5-encoder1', {
+      ...encoderStyle,
+      label: 'Encoder A'
+    });
+    const ex5Enc2 = createInfiniteKnob('#ex5-encoder2', {
+      ...encoderStyle,
+      label: 'Encoder B'
+    });
+
+    ex5Enc1.onChange(e => document.getElementById('ex5-enc1-value').textContent = e.value.toFixed(1));
+    ex5Enc2.onChange(e => document.getElementById('ex5-enc2-value').textContent = e.value.toFixed(1));
+
+    // Example 5: Mixer Channel
+    const mixerStyle = { size: 45 };
+
+    function createMixerChannel(prefix) {
+      const pan = createPanKnob(`#${prefix}-pan`, { ...mixerStyle, label: 'Pan' });
+      const eq = createFrequencyKnob(`#${prefix}-eq`, { ...mixerStyle, label: 'EQ' });
+      const gain = new Knob(`#${prefix}-gain`, {
+        ...mixerStyle,
+        mode: 'bounded',
+        min: -20,
+        max: 20,
+        value: 0,
+        step: 0.5,
+        label: 'Gain',
+        tickCount: 5,
+        valueLabels: ['-20', '', '0', '', '+20']
+      });
+
+      function updateDisplay() {
+        const panVal = pan.getValue();
+        const panStr = panVal === 0 ? 'C' : (panVal < 0 ? `L${Math.abs(panVal)}` : `R${panVal}`);
+        const gainVal = gain.getValue();
+        const gainStr = gainVal > 0 ? `+${gainVal}` : gainVal;
+        document.getElementById(`${prefix}-values`).innerHTML =
+          `Pan: ${panStr}<br>EQ: ${eq.getValue()}<br>Gain: ${gainStr}`;
+      }
+
+      pan.onChange(updateDisplay);
+      eq.onChange(updateDisplay);
+      gain.onChange(updateDisplay);
+
+      return { pan, eq, gain };
+    }
+
+    createMixerChannel('ex6-ch1');
+    createMixerChannel('ex6-ch2');
+
+    // Example 6: Global Config
+    const ex7Normal = new Knob('#ex7-normal', {
+      mode: 'bounded',
+      min: 0,
+      max: 100,
+      value: 50,
+      step: 1,
+      label: 'Normal',
+      size: 70
+    });
+
+    const ex7Precise = new Knob('#ex7-precise', {
+      mode: 'bounded',
+      min: 0,
+      max: 100,
+      value: 50,
+      step: 1,
+      label: 'Precise',
+      size: 70,
+      pixelsPerFullRotation: 800,
+      ctrlMultiplier: 0.1
+    });
+
+    ex7Normal.onChange(e => document.getElementById('ex7-normal-value').textContent = e.value.toFixed(0));
+    ex7Precise.onChange(e => document.getElementById('ex7-precise-value').textContent = e.value.toFixed(0));
+
+    // Example 7: Programmatic Control
+    const ex8Knob = new Knob('#ex8-knob', {
+      mode: 'bounded',
+      min: 0,
+      max: 100,
+      value: 0,
+      step: 1,
+      label: 'Cutoff',
+      size: 80
+    });
+
+    ex8Knob.onChange(e => document.getElementById('ex8-value').textContent = e.value.toFixed(0));
+
+    document.getElementById('ex8-set-min').addEventListener('click', () => ex8Knob.setValue(0));
+    document.getElementById('ex8-set-mid').addEventListener('click', () => ex8Knob.setValue(50));
+    document.getElementById('ex8-set-max').addEventListener('click', () => ex8Knob.setValue(100));
+
+    document.getElementById('ex8-sweep').addEventListener('click', () => {
+      const from = ex8Knob.getValue();
+      const to = from < 50 ? 100 : 0;
+      const start = performance.now();
+      const duration = 1000;
+
+      function animate(time) {
+        const progress = Math.min((time - start) / duration, 1);
+        // Ease out quad
+        const eased = 1 - (1 - progress) * (1 - progress);
+        const value = from + (to - from) * eased;
+        ex8Knob.setValue(value);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      }
+
+      requestAnimationFrame(animate);
+    });
+
+    console.log('Examples loaded!');
+  </script>
+</body>
+</html>

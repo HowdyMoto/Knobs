@@ -104,6 +104,12 @@ export interface KnobOptions {
   /** Width of the indicator line in pixels (default 3) */
   indicatorWidth?: number;
 
+  /** Show grip bumps around edge instead of indicator line (encoder style) */
+  gripBumps?: boolean;
+
+  /** Number of grip bumps around the edge (default 20) */
+  gripBumpCount?: number;
+
   /** Color of the tick marks */
   tickColor?: string;
 
@@ -176,6 +182,8 @@ export const DEFAULT_OPTIONS = {
   indicatorColor: '#ffffff',
   indicatorLength: 0.7,
   indicatorWidth: 3,
+  gripBumps: false,
+  gripBumpCount: 20,
   tickColor: '#888888',
   labelColor: '#cccccc',
   fontFamily: 'Arial, sans-serif',
