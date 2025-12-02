@@ -1,48 +1,51 @@
 import {
-  KnobOptions,
-  KnobChangeEvent,
-  IKnob,
-  DEFAULT_OPTIONS,
+  SliderOptions,
+  SliderChangeEvent,
+  ToggleChangeEvent,
+  ISlider,
+  DEFAULT_SLIDER_OPTIONS,
   globalConfig,
 } from './types';
-import {
-  SVGRenderer,
-  TOTAL_ROTATION_DEGREES,
-  REFERENCE_VALUE_RANGE,
-  DEGREES_PER_UNIT,
-} from './svg-renderer';
+import { SliderSVGRenderer } from './slider-svg-renderer';
 
 // Counter for generating unique instance IDs
-let instanceCounter = 0;
+let sliderInstanceCounter = 0;
 
 /**
- * Main Knob class - creates an interactive rotatable knob control
+ * Main Slider class - creates an interactive vertical fader control
  */
-export class Knob implements IKnob {
+export class Slider implements ISlider {
   private instanceId: number;
-  private options: typeof DEFAULT_OPTIONS &
-    Pick<KnobOptions, 'min' | 'max' | 'valueLabels' | 'className'>;
+  private options: typeof DEFAULT_SLIDER_OPTIONS &
+    Pick<SliderOptions, 'valueLabels' | 'className'>;
 
-  // Resolved config values (from options or globalConfig)
-  private pixelsPerFullRotation: number;
+  // Resolved config values
   private shiftMultiplier: number;
   private ctrlMultiplier: number;
 
   private container: HTMLElement;
   private svg: SVGSVGElement;
-  private dialGroup: SVGGElement | null = null;
+  private thumbGroup: SVGGElement | null = null;
   private valueDisplayElement: HTMLDivElement | null = null;
+  private toggleElement: HTMLDivElement | null = null;
+  private toggleLed: HTMLDivElement | null = null;
 
-  private value: number;          // The stepped/rounded value for external use
-  private rawValue: number = 0;   // Internal unrounded value for smooth tracking
-  private angle: number = 0;
+  private value: number;
+  private rawValue: number = 0;
+  private toggleState: boolean = false;
+
+  // Track dimensions from renderer
+  private trackLength: number;
+  private topY: number;
+  private toggleLedColor: string;
 
   // Interaction state
   private isDragging: boolean = false;
   private lastY: number = 0;
 
   // Event callbacks
-  private changeCallbacks: Set<(event: KnobChangeEvent) => void> = new Set();
+  private changeCallbacks: Set<(event: SliderChangeEvent) => void> = new Set();
+  private toggleCallbacks: Set<(event: ToggleChangeEvent) => void> = new Set();
 
   // Bound event handlers for cleanup
   private boundMouseDown: (e: MouseEvent) => void;
@@ -52,10 +55,10 @@ export class Knob implements IKnob {
   private boundTouchMove: (e: TouchEvent) => void;
   private boundTouchEnd: (e: TouchEvent) => void;
   private boundContextMenu: (e: MouseEvent) => void;
+  private boundToggleClick: (e: Event) => void;
 
-  constructor(container: HTMLElement | string, options: Partial<KnobOptions> = {}) {
-    // Generate unique instance ID
-    this.instanceId = instanceCounter++;
+  constructor(container: HTMLElement | string, options: Partial<SliderOptions> = {}) {
+    this.instanceId = sliderInstanceCounter++;
 
     // Get container element
     if (typeof container === 'string') {
@@ -68,29 +71,18 @@ export class Knob implements IKnob {
 
     // Merge options with defaults
     this.options = {
-      ...DEFAULT_OPTIONS,
+      ...DEFAULT_SLIDER_OPTIONS,
       ...options,
     };
 
-    // Resolve global config values (per-knob overrides take precedence)
-    this.pixelsPerFullRotation = options.pixelsPerFullRotation ?? globalConfig.pixelsPerFullRotation;
+    // Resolve config values for modifier keys
     this.shiftMultiplier = options.shiftMultiplier ?? globalConfig.shiftMultiplier;
     this.ctrlMultiplier = options.ctrlMultiplier ?? globalConfig.ctrlMultiplier;
-
-    // Set default min/max based on mode (use merged options, not user options)
-    if (this.options.mode === 'bounded') {
-      this.options.min = this.options.min ?? 0;
-      this.options.max = this.options.max ?? 10;
-    } else if (this.options.mode === 'min-only') {
-      this.options.min = this.options.min ?? 0;
-    }
 
     // Initialize value
     this.value = this.options.value;
     this.rawValue = this.options.value;
-
-    // Calculate initial angle
-    this.angle = this.valueToAngle(this.value);
+    this.toggleState = this.options.toggleState;
 
     // Bind event handlers
     this.boundMouseDown = this.handleMouseDown.bind(this);
@@ -100,9 +92,15 @@ export class Knob implements IKnob {
     this.boundTouchMove = this.handleTouchMove.bind(this);
     this.boundTouchEnd = this.handleTouchEnd.bind(this);
     this.boundContextMenu = (e: MouseEvent) => e.preventDefault();
+    this.boundToggleClick = this.handleToggleClick.bind(this);
 
-    // Render the knob
-    this.svg = this.render();
+    // Render the slider
+    const renderer = new SliderSVGRenderer(this.options, this.instanceId);
+    this.trackLength = renderer.getTrackLength();
+    this.topY = renderer.getTopY();
+    this.toggleLedColor = renderer.getToggleLedColor();
+
+    this.svg = this.render(renderer);
     this.attachEventListeners();
 
     // Apply initial state
@@ -110,10 +108,9 @@ export class Knob implements IKnob {
   }
 
   /**
-   * Render the SVG knob
+   * Render the slider
    */
-  private render(): SVGSVGElement {
-    const renderer = new SVGRenderer(this.options, this.instanceId);
+  private render(renderer: SliderSVGRenderer): SVGSVGElement {
     const svg = renderer.createSVG();
 
     // Add custom class if provided
@@ -122,70 +119,87 @@ export class Knob implements IKnob {
     }
 
     // Style the container
-    this.container.style.display = 'inline-block';
-    this.container.style.cursor = 'pointer';
-    this.container.style.touchAction = 'none'; // Prevent scrolling on touch
+    this.container.style.display = 'inline-flex';
+    this.container.style.flexDirection = 'column';
+    this.container.style.alignItems = 'center';
+    this.container.style.touchAction = 'none';
 
-    // Create wrapper for knob, label, and value display
+    // Create wrapper
     const wrapper = document.createElement('div');
-    wrapper.style.textAlign = 'center';
+    wrapper.style.display = 'flex';
+    wrapper.style.flexDirection = 'column';
+    wrapper.style.alignItems = 'center';
+
     wrapper.appendChild(svg);
 
-    // Add label below if provided
+    // Add label if provided
     if (this.options.label) {
       const label = document.createElement('div');
       label.textContent = this.options.label;
       label.style.fontFamily = this.options.fontFamily;
-      label.style.fontSize = `${this.options.size * 0.14}px`;
+      label.style.fontSize = '11px';
       label.style.color = this.options.labelColor;
-      label.style.marginTop = '-5px';
+      label.style.marginTop = '4px';
+      label.style.textAlign = 'center';
       wrapper.appendChild(label);
     }
 
     // Add value display if enabled
     if (this.options.showValueDisplay) {
       this.valueDisplayElement = document.createElement('div');
-      this.valueDisplayElement.className = 'knob-value-display';
+      this.valueDisplayElement.className = 'slider-value-display';
       this.valueDisplayElement.style.fontFamily = "'Fira Code', monospace";
       this.valueDisplayElement.style.fontSize = '11px';
-      this.valueDisplayElement.style.color = this.options.valueDisplayColor;
+      this.valueDisplayElement.style.color = '#4ecdc4';
       this.valueDisplayElement.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
       this.valueDisplayElement.style.padding = '3px 8px';
       this.valueDisplayElement.style.borderRadius = '4px';
-      this.valueDisplayElement.style.marginTop = '4px';
-      this.valueDisplayElement.style.display = 'inline-block';
+      this.valueDisplayElement.style.marginTop = '6px';
+      this.valueDisplayElement.style.textAlign = 'center';
       this.valueDisplayElement.style.minWidth = '36px';
       this.valueDisplayElement.textContent = this.formatValue(this.value);
       wrapper.appendChild(this.valueDisplayElement);
     }
 
+    // Add toggle if enabled
+    if (this.options.showToggle) {
+      this.toggleElement = renderer.createToggle(this.options.width);
+      this.toggleLed = this.toggleElement.querySelector('.slider-toggle-led') as HTMLDivElement;
+      wrapper.appendChild(this.toggleElement);
+      this.updateToggleVisuals();
+    }
+
     this.container.appendChild(wrapper);
 
-    // Get references to animated elements
-    this.dialGroup = svg.querySelector('.knob-dial') as SVGGElement;
+    // Get reference to thumb
+    this.thumbGroup = svg.querySelector('.slider-thumb') as SVGGElement;
 
     return svg;
   }
 
   /**
-   * Attach mouse and touch event listeners
+   * Attach event listeners
    */
   private attachEventListeners(): void {
-    // Mouse events
-    this.container.addEventListener('mousedown', this.boundMouseDown);
+    // Mouse events on SVG (for thumb dragging)
+    this.svg.addEventListener('mousedown', this.boundMouseDown);
+    this.svg.addEventListener('touchstart', this.boundTouchStart, { passive: false });
+    this.svg.addEventListener('contextmenu', this.boundContextMenu);
 
-    // Touch events
-    this.container.addEventListener('touchstart', this.boundTouchStart, { passive: false });
-
-    // Prevent context menu on long press
-    this.container.addEventListener('contextmenu', this.boundContextMenu);
+    // Toggle click
+    if (this.toggleElement) {
+      const toggleButton = this.toggleElement.querySelector('.slider-toggle');
+      if (toggleButton) {
+        toggleButton.addEventListener('click', this.boundToggleClick);
+      }
+    }
   }
 
   /**
    * Handle mouse down
    */
   private handleMouseDown(e: MouseEvent): void {
-    if (e.button !== 0) return; // Only left click
+    if (e.button !== 0) return;
     e.preventDefault();
 
     this.startDrag(e.clientY);
@@ -200,6 +214,7 @@ export class Knob implements IKnob {
   private handleMouseMove(e: MouseEvent): void {
     if (!this.isDragging) return;
 
+    // Inverted: moving up increases value
     const deltaY = this.lastY - e.clientY;
     this.processDrag(deltaY, e.shiftKey, e.ctrlKey);
     this.lastY = e.clientY;
@@ -237,7 +252,6 @@ export class Knob implements IKnob {
     e.preventDefault();
 
     const deltaY = this.lastY - e.touches[0].clientY;
-    // Touch doesn't have modifier keys, use normal speed
     this.processDrag(deltaY, false, false);
     this.lastY = e.touches[0].clientY;
   }
@@ -254,53 +268,45 @@ export class Knob implements IKnob {
   }
 
   /**
+   * Handle toggle click
+   */
+  private handleToggleClick(_e: Event): void {
+    const previousState = this.toggleState;
+    this.toggleState = !this.toggleState;
+    this.updateToggleVisuals();
+    this.emitToggle(previousState);
+  }
+
+  /**
    * Start dragging
    */
   private startDrag(y: number): void {
     this.isDragging = true;
     this.lastY = y;
-    this.container.style.cursor = 'grabbing';
-  }
-
-  /**
-   * Get the effective value range for this knob
-   */
-  private getValueRange(): number {
-    switch (this.options.mode) {
-      case 'bounded':
-        return this.options.max! - this.options.min!;
-      case 'min-only':
-      case 'infinite':
-        // Use a reference range for unbounded knobs
-        return REFERENCE_VALUE_RANGE;
-    }
+    this.svg.style.cursor = 'grabbing';
   }
 
   /**
    * Process drag movement
    */
   private processDrag(deltaY: number, shiftKey: boolean, ctrlKey: boolean): void {
-    // Calculate movement as a fraction of the full rotation (0 to 1)
-    // pixelsPerFullRotation defines how many pixels = 100% of the dial travel
-    let movementFraction = deltaY / this.pixelsPerFullRotation;
+    // Direct 1:1 mapping: pixels moved = pixels on track
+    // Convert pixel movement to value based on track length
+    const valueRange = this.options.max - this.options.min;
+    let valueDelta = (deltaY / this.trackLength) * valueRange;
 
-    // Apply modifier keys
+    // Modifier keys adjust speed (Shift = faster, Ctrl = slower/precise)
     if (shiftKey) {
-      movementFraction *= this.shiftMultiplier;
+      valueDelta *= this.shiftMultiplier;
     }
     if (ctrlKey) {
-      movementFraction *= this.ctrlMultiplier;
+      valueDelta *= this.ctrlMultiplier;
     }
 
-    // Convert fraction to value delta based on this knob's range
-    const valueRange = this.getValueRange();
-    const valueDelta = movementFraction * valueRange;
-
-    // Update raw value (accumulates fractional movements for smooth rotation)
+    // Update value
     const previousValue = this.value;
     this.updateValue(this.rawValue + valueDelta);
 
-    // Emit change event if stepped value changed
     if (this.value !== previousValue) {
       this.emitChange(previousValue);
     }
@@ -311,71 +317,35 @@ export class Knob implements IKnob {
    */
   private endDrag(): void {
     this.isDragging = false;
-    this.container.style.cursor = 'pointer';
+    this.svg.style.cursor = 'pointer';
   }
 
   /**
    * Update the value with bounds checking
    */
   private updateValue(newValue: number): void {
-    // Store raw value for smooth accumulation
-    switch (this.options.mode) {
-      case 'infinite':
-        // No bounds, just update
-        this.rawValue = newValue;
-        break;
+    // Clamp to bounds
+    this.rawValue = Math.max(this.options.min, Math.min(this.options.max, newValue));
 
-      case 'min-only':
-        // Only check minimum
-        this.rawValue = Math.max(this.options.min!, newValue);
-        break;
-
-      case 'bounded':
-        // Check both min and max
-        this.rawValue = Math.max(
-          this.options.min!,
-          Math.min(this.options.max!, newValue)
-        );
-        break;
-    }
-
-    // Round to step for the external value
+    // Round to step
     this.value = Math.round(this.rawValue / this.options.step) * this.options.step;
 
-    // Update angle and visuals (use raw value for smooth rotation)
-    this.angle = this.valueToAngle(this.rawValue);
     this.updateVisuals();
-  }
-
-  /**
-   * Convert value to angle
-   */
-  private valueToAngle(value: number): number {
-    switch (this.options.mode) {
-      case 'infinite':
-        // For infinite mode, use a simple multiplier
-        return value * DEGREES_PER_UNIT;
-
-      case 'min-only':
-        // Map from min to arbitrary range
-        return ((value - this.options.min!) * TOTAL_ROTATION_DEGREES) / REFERENCE_VALUE_RANGE;
-
-      case 'bounded':
-        // Map value to angle range
-        const valueRange = this.options.max! - this.options.min!;
-        const angleRange = this.options.endAngle - this.options.startAngle;
-        const normalizedValue = (value - this.options.min!) / valueRange;
-        return this.options.startAngle + normalizedValue * angleRange;
-    }
   }
 
   /**
    * Update visual elements
    */
   private updateVisuals(): void {
-    // Update dial rotation
-    if (this.dialGroup) {
-      this.dialGroup.style.transform = `rotate(${this.angle}deg)`;
+    if (this.thumbGroup) {
+      // Calculate thumb position
+      const valueRange = this.options.max - this.options.min;
+      const normalizedValue = (this.rawValue - this.options.min) / valueRange;
+
+      // Invert: high value = top of track
+      const thumbY = this.topY + this.trackLength * (1 - normalizedValue);
+
+      this.thumbGroup.style.transform = `translateY(${thumbY}px)`;
     }
 
     // Update value display
@@ -396,17 +366,44 @@ export class Knob implements IKnob {
   }
 
   /**
+   * Update toggle visuals
+   */
+  private updateToggleVisuals(): void {
+    if (this.toggleLed) {
+      if (this.toggleState) {
+        this.toggleLed.style.backgroundColor = this.toggleLedColor;
+        this.toggleLed.style.boxShadow = `0 0 6px ${this.toggleLedColor}, inset 0 1px 2px rgba(255,255,255,0.3)`;
+      } else {
+        this.toggleLed.style.backgroundColor = '#333';
+        this.toggleLed.style.boxShadow = 'inset 0 1px 2px rgba(0,0,0,0.5)';
+      }
+    }
+  }
+
+  /**
    * Emit change event
    */
   private emitChange(previousValue: number): void {
-    const event: KnobChangeEvent = {
+    const event: SliderChangeEvent = {
       value: this.value,
       previousValue,
-      angle: this.angle,
-      knob: this,
+      slider: this,
     };
 
     this.changeCallbacks.forEach((callback) => callback(event));
+  }
+
+  /**
+   * Emit toggle event
+   */
+  private emitToggle(previousState: boolean): void {
+    const event: ToggleChangeEvent = {
+      state: this.toggleState,
+      previousState,
+      slider: this,
+    };
+
+    this.toggleCallbacks.forEach((callback) => callback(event));
   }
 
   // Public API
@@ -416,9 +413,8 @@ export class Knob implements IKnob {
   }
 
   setValue(value: number): void {
-    // Validate input
     if (typeof value !== 'number' || !Number.isFinite(value)) {
-      console.warn('Knob.setValue: Invalid value provided, must be a finite number');
+      console.warn('Slider.setValue: Invalid value provided, must be a finite number');
       return;
     }
 
@@ -429,13 +425,34 @@ export class Knob implements IKnob {
     }
   }
 
-  destroy(): void {
-    // Remove container event listeners
-    this.container.removeEventListener('mousedown', this.boundMouseDown);
-    this.container.removeEventListener('touchstart', this.boundTouchStart);
-    this.container.removeEventListener('contextmenu', this.boundContextMenu);
+  getToggle(): boolean {
+    return this.toggleState;
+  }
 
-    // Remove document event listeners (in case destroy is called while dragging)
+  setToggle(state: boolean): void {
+    if (this.toggleState === state) return;
+
+    const previousState = this.toggleState;
+    this.toggleState = state;
+    this.updateToggleVisuals();
+    this.emitToggle(previousState);
+  }
+
+  destroy(): void {
+    // Remove SVG event listeners
+    this.svg.removeEventListener('mousedown', this.boundMouseDown);
+    this.svg.removeEventListener('touchstart', this.boundTouchStart);
+    this.svg.removeEventListener('contextmenu', this.boundContextMenu);
+
+    // Remove toggle listener
+    if (this.toggleElement) {
+      const toggleButton = this.toggleElement.querySelector('.slider-toggle');
+      if (toggleButton) {
+        toggleButton.removeEventListener('click', this.boundToggleClick);
+      }
+    }
+
+    // Remove document event listeners
     document.removeEventListener('mousemove', this.boundMouseMove);
     document.removeEventListener('mouseup', this.boundMouseUp);
     document.removeEventListener('touchmove', this.boundTouchMove);
@@ -444,6 +461,7 @@ export class Knob implements IKnob {
 
     // Clear callbacks
     this.changeCallbacks.clear();
+    this.toggleCallbacks.clear();
 
     // Remove from DOM
     this.container.innerHTML = '';
@@ -453,13 +471,19 @@ export class Knob implements IKnob {
     return this.container;
   }
 
-  onChange(callback: (event: KnobChangeEvent) => void): void {
+  onChange(callback: (event: SliderChangeEvent) => void): void {
     this.changeCallbacks.add(callback);
   }
 
-  off(event: 'change', callback: Function): void {
+  onToggle(callback: (event: ToggleChangeEvent) => void): void {
+    this.toggleCallbacks.add(callback);
+  }
+
+  off(event: 'change' | 'toggle', callback: Function): void {
     if (event === 'change') {
-      this.changeCallbacks.delete(callback as (event: KnobChangeEvent) => void);
+      this.changeCallbacks.delete(callback as (event: SliderChangeEvent) => void);
+    } else if (event === 'toggle') {
+      this.toggleCallbacks.delete(callback as (event: ToggleChangeEvent) => void);
     }
   }
 }

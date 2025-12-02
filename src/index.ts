@@ -24,12 +24,18 @@
  */
 
 export { Knob } from './knob';
+export { Slider } from './slider';
 export {
   KnobOptions,
   KnobMode,
   KnobChangeEvent,
   IKnob,
   DEFAULT_OPTIONS,
+  SliderOptions,
+  SliderChangeEvent,
+  ToggleChangeEvent,
+  ISlider,
+  DEFAULT_SLIDER_OPTIONS,
   GlobalConfig,
   globalConfig,
   configureKnobs,
@@ -38,7 +44,8 @@ export {
 // Factory functions for common knob types
 
 import { Knob } from './knob';
-import { KnobOptions } from './types';
+import { Slider } from './slider';
+import { KnobOptions, SliderOptions } from './types';
 
 /**
  * Create a standard bounded knob (0-10 range, like a guitar amp)
@@ -124,22 +131,58 @@ export function createPanKnob(
   });
 }
 
+// Factory functions for sliders
+
 /**
- * Create a frequency knob (logarithmic-friendly, 20Hz to 20kHz style)
+ * Create a standard fader (0-10 range)
  */
-export function createFrequencyKnob(
+export function createFader(
   container: HTMLElement | string,
-  options: Partial<KnobOptions> = {}
-): Knob {
-  return new Knob(container, {
-    mode: 'bounded',
+  options: Partial<SliderOptions> = {}
+): Slider {
+  return new Slider(container, {
     min: 0,
-    max: 100,
-    value: 50,
-    step: 1,
-    tickCount: 5,
-    valueLabels: ['20', '200', '2k', '8k', '20k'],
-    label: 'Freq',
+    max: 10,
+    value: 0,
+    step: 0.1,
+    ...options,
+  });
+}
+
+/**
+ * Create a volume fader with dB-style markings
+ */
+export function createVolumeFader(
+  container: HTMLElement | string,
+  options: Partial<SliderOptions> = {}
+): Slider {
+  return new Slider(container, {
+    min: 0,
+    max: 10,
+    value: 7,
+    step: 0.1,
+    label: 'Volume',
+    tickCount: 11,
+    valueLabels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+    ...options,
+  });
+}
+
+/**
+ * Create a fader with mute toggle
+ */
+export function createMuteFader(
+  container: HTMLElement | string,
+  options: Partial<SliderOptions> = {}
+): Slider {
+  return new Slider(container, {
+    min: 0,
+    max: 10,
+    value: 7,
+    step: 0.1,
+    showToggle: true,
+    toggleLabel: 'Mute',
+    toggleLedColor: '#ff4444',
     ...options,
   });
 }

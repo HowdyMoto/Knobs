@@ -13,6 +13,7 @@
     "build": "tsc && npm run bundle",
     "bundle": "esbuild src/index.ts --bundle --outfile=dist/knobs.js --format=iife --global-name=Knobs && esbuild src/index.ts --bundle --outfile=dist/knobs.esm.js --format=esm",
     "dev": "tsc --watch",
+    "watch": "esbuild src/index.ts --bundle --outfile=dist/knobs.esm.js --format=esm --watch",
     "examples": "http-server . -p 8080 -o examples/index.html"
   },
   "keywords": [

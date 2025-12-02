@@ -274,7 +274,7 @@ volume.onChange((e) => {
         <span class="difficulty basic">Basic</span>
       </div>
       <div class="example-description">
-        Pre-configured factory functions for common knob types: volume, pan (L/R), and frequency.
+        Pre-configured factory functions for common knob types: volume and pan (L/R).
       </div>
       <div class="example-content">
         <div class="example-demo">
@@ -287,17 +287,12 @@ volume.onChange((e) => {
               <div id="ex2-pan"></div>
               <div class="value-display" id="ex2-pan-value">C</div>
             </div>
-            <div class="knob-wrapper">
-              <div id="ex2-freq"></div>
-              <div class="value-display" id="ex2-freq-value">50</div>
-            </div>
           </div>
         </div>
         <div class="example-code">
           <pre><code class="language-javascript">import {
   createVolumeKnob,
-  createPanKnob,
-  createFrequencyKnob
+  createPanKnob
 } from 'knobs';
 
 // Standard 0-10 volume knob
@@ -306,17 +301,80 @@ const volume = createVolumeKnob('#volume', {
 });
 
 // Pan: -100 (L) to +100 (R), centered at 0
-const pan = createPanKnob('#pan');
+const pan = createPanKnob('#pan');</code></pre>
+        </div>
+      </div>
+    </section>
 
-// Frequency: labeled 20Hz to 20kHz
-const freq = createFrequencyKnob('#eq', {
-  label: 'EQ'
+    <!-- Example 3: Color Customization -->
+    <section class="example" id="color-customization">
+      <div class="example-header">
+        <h2>Color Customization</h2>
+        <span class="difficulty basic">Basic</span>
+      </div>
+      <div class="example-description">
+        Customize every visual aspect of knobs: dial, bezel, indicator, ticks, labels, and value display. Mix and match for your UI theme.
+      </div>
+      <div class="example-content">
+        <div class="example-demo">
+          <div class="demo-row">
+            <div class="knob-wrapper">
+              <div id="ex-color1"></div>
+            </div>
+            <div class="knob-wrapper">
+              <div id="ex-color2"></div>
+            </div>
+            <div class="knob-wrapper">
+              <div id="ex-color4"></div>
+            </div>
+          </div>
+        </div>
+        <div class="example-code">
+          <pre><code class="language-javascript">import { Knob } from 'knobs';
+
+// Neon cyan theme
+const neon = new Knob('#neon', {
+  mode: 'bounded', min: 0, max: 10, value: 5,
+  label: 'Neon',
+  dialColor: '#000000',
+  indicatorColor: '#64ffda',
+  tickColor: '#64ffda',
+  labelColor: '#64ffda',
+  showValueDisplay: true,
+  valueDisplayColor: '#64ffda'
+});
+
+// Vintage theme with aged brass bezel
+const vintage = new Knob('#vintage', {
+  mode: 'bounded', min: 0, max: 10, value: 5,
+  label: 'Vintage',
+  dialColor: '#2a2520',
+  bezelColor: '#8b7355',
+  indicatorColor: '#d4c4a8',
+  tickColor: '#96948e',
+  labelColor: '#ece8df',
+  showValueDisplay: true,
+  valueDisplayColor: '#ff9500'
+});
+
+// Dieter Rams / Braun inspired theme
+const braun = new Knob('#braun', {
+  mode: 'bounded', min: 0, max: 10, value: 5,
+  label: 'Braun',
+  dialColor: '#cccccc',
+  bezelColor: '#999999',
+  indicatorColor: '#cc5555',
+  indicatorWidth: 5,
+  tickColor: '#c0c0bc',
+  labelColor: '#e8e8e4',
+  showValueDisplay: true,
+  valueDisplayColor: '#cc5555'
 });</code></pre>
         </div>
       </div>
     </section>
 
-    <!-- Example 3: Guitar Amp -->
+    <!-- Example 4: Guitar Amp -->
     <section class="example" id="guitar-amp">
       <div class="example-header">
         <h2>Guitar Amp Panel</h2>
@@ -357,8 +415,7 @@ const freq = createFrequencyKnob('#eq', {
           <pre><code class="language-javascript">import { createSpinalTapKnob } from 'knobs';
 
 const ampStyle = {
-  size: 60,
-  backgroundColor: '#1a1a1a',
+  size: 55,
   dialColor: '#0a0a0a',
   indicatorColor: '#f0f0f0',
   tickColor: '#666',
@@ -435,7 +492,7 @@ encoder.onChange((e) => {
         <span class="difficulty advanced">Advanced</span>
       </div>
       <div class="example-description">
-        A complete mixing console channel with pan, EQ, and gain controls. Demonstrates combining multiple knobs into a reusable component.
+        A complete mixing console channel with pan and gain controls. Demonstrates combining multiple knobs into a reusable component.
       </div>
       <div class="example-content">
         <div class="example-demo">
@@ -443,24 +500,21 @@ encoder.onChange((e) => {
             <div class="mixer-channel">
               <span class="channel-label">CH 1</span>
               <div id="ex6-ch1-pan"></div>
-              <div id="ex6-ch1-eq"></div>
               <div id="ex6-ch1-gain"></div>
-              <div class="mixer-values" id="ex6-ch1-values">Pan: C<br>EQ: 50<br>Gain: 0</div>
+              <div class="mixer-values" id="ex6-ch1-values">Pan: C<br>Gain: 0</div>
             </div>
             <div class="mixer-channel">
               <span class="channel-label">CH 2</span>
               <div id="ex6-ch2-pan"></div>
-              <div id="ex6-ch2-eq"></div>
               <div id="ex6-ch2-gain"></div>
-              <div class="mixer-values" id="ex6-ch2-values">Pan: C<br>EQ: 50<br>Gain: 0</div>
+              <div class="mixer-values" id="ex6-ch2-values">Pan: C<br>Gain: 0</div>
             </div>
           </div>
         </div>
         <div class="example-code">
           <pre><code class="language-javascript">import {
   Knob,
-  createPanKnob,
-  createFrequencyKnob
+  createPanKnob
 } from 'knobs';
 
 function createChannel(id) {
@@ -468,10 +522,6 @@ function createChannel(id) {
 
   const pan = createPanKnob(`#${id}-pan`, {
     ...style, label: 'Pan'
-  });
-
-  const eq = createFrequencyKnob(`#${id}-eq`, {
-    ...style, label: 'EQ'
   });
 
   const gain = new Knob(`#${id}-gain`, {
@@ -486,7 +536,7 @@ function createChannel(id) {
     valueLabels: ['-20', '', '0', '', '+20']
   });
 
-  return { pan, eq, gain };
+  return { pan, gain };
 }
 
 const ch1 = createChannel('ch1');
@@ -550,6 +600,73 @@ const precise = new Knob('#precise', {
       </div>
     </section>
 
+    <!-- Example 8: Sliders/Faders -->
+    <section class="example" id="sliders">
+      <div class="example-header">
+        <h2>Mixer Faders</h2>
+        <span class="difficulty intermediate">Intermediate</span>
+      </div>
+      <div class="example-description">
+        Vertical fader controls like those found on mixing consoles. Includes optional toggle switches with LED indicators.
+      </div>
+      <div class="example-content">
+        <div class="example-demo">
+          <div class="demo-row" style="align-items: flex-start;">
+            <div class="mixer-channel">
+              <span class="channel-label">CH 1</span>
+              <div id="ex-slider1"></div>
+            </div>
+            <div class="mixer-channel">
+              <span class="channel-label">CH 2</span>
+              <div id="ex-slider2"></div>
+            </div>
+            <div class="mixer-channel">
+              <span class="channel-label">Master</span>
+              <div id="ex-slider3"></div>
+            </div>
+          </div>
+        </div>
+        <div class="example-code">
+          <pre><code class="language-javascript">import {
+  Slider,
+  createFader,
+  createMuteFader
+} from 'knobs';
+
+// Basic fader
+const ch1 = createFader('#ch1', {
+  label: 'Vol',
+  length: 120
+});
+
+// Custom styled fader
+const ch2 = new Slider('#ch2', {
+  min: 0,
+  max: 10,
+  value: 5,
+  length: 120,
+  label: 'Vol',
+  thumbColor: '#666',
+  trackColor: '#222'
+});
+
+// Fader with mute toggle
+const master = createMuteFader('#master', {
+  label: 'Vol',
+  length: 120
+});
+
+master.onChange(e => {
+  console.log('Volume:', e.value);
+});
+
+master.onToggle(e => {
+  console.log('Mute:', e.state);
+});</code></pre>
+        </div>
+      </div>
+    </section>
+
     <!-- Example 7: Programmatic Control -->
     <section class="example" id="programmatic">
       <div class="example-header">
@@ -562,9 +679,12 @@ const precise = new Knob('#precise', {
       <div class="example-content">
         <div class="example-demo">
           <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-            <div class="knob-wrapper">
-              <div id="ex8-knob"></div>
-              <div class="value-display" id="ex8-value">0</div>
+            <div style="display: flex; gap: 30px; align-items: flex-start;">
+              <div class="knob-wrapper">
+                <div id="ex8-knob"></div>
+                <div class="value-display" id="ex8-value">0</div>
+              </div>
+              <div id="ex8-slider"></div>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
               <button id="ex8-set-min" style="padding: 8px 16px; cursor: pointer;">Set Min</button>
@@ -575,40 +695,41 @@ const precise = new Knob('#precise', {
           </div>
         </div>
         <div class="example-code">
-          <pre><code class="language-javascript">import { Knob } from 'knobs';
+          <pre><code class="language-javascript">import { Knob, Slider } from 'knobs';
 
 const knob = new Knob('#cutoff', {
   mode: 'bounded',
-  min: 0,
-  max: 100,
-  value: 0,
+  min: 0, max: 100, value: 0,
   label: 'Cutoff'
 });
 
-// Get/set values
-console.log(knob.getValue()); // 0
-knob.setValue(50);
+const slider = new Slider('#slider', {
+  min: 0, max: 100, value: 0,
+  length: 120
+});
 
-// Animate a sweep
+// Sync knob and slider
+knob.onChange(e => slider.setValue(e.value));
+slider.onChange(e => knob.setValue(e.value));
+
+// Animate both with sweep
 function sweep(from, to, duration) {
   const start = performance.now();
-
   function animate(time) {
     const progress = Math.min(
       (time - start) / duration, 1
     );
     const value = from + (to - from) * progress;
     knob.setValue(value);
-
+    slider.setValue(value);
     if (progress < 1) {
       requestAnimationFrame(animate);
     }
   }
-
   requestAnimationFrame(animate);
 }
 
-sweep(0, 100, 1000); // 1 second sweep</code></pre>
+sweep(0, 100, 1000);</code></pre>
         </div>
       </div>
     </section>
@@ -630,12 +751,14 @@ sweep(0, 100, 1000); // 1 second sweep</code></pre>
   <script type="module">
     import {
       Knob,
+      Slider,
       configureKnobs,
       createVolumeKnob,
       createPanKnob,
-      createFrequencyKnob,
       createSpinalTapKnob,
-      createInfiniteKnob
+      createInfiniteKnob,
+      createFader,
+      createMuteFader
     } from '../dist/knobs.esm.js';
 
     // Example 1: Simple Volume
@@ -654,7 +777,6 @@ sweep(0, 100, 1000); // 1 second sweep</code></pre>
     // Example 2: Factory Functions
     const ex2Volume = createVolumeKnob('#ex2-volume', { label: 'Master', size: 60 });
     const ex2Pan = createPanKnob('#ex2-pan', { size: 60 });
-    const ex2Freq = createFrequencyKnob('#ex2-freq', { label: 'EQ', size: 60 });
 
     ex2Volume.onChange(e => {
       document.getElementById('ex2-vol-value').textContent = e.value.toFixed(1);
@@ -663,14 +785,58 @@ sweep(0, 100, 1000); // 1 second sweep</code></pre>
       const v = e.value;
       document.getElementById('ex2-pan-value').textContent = v === 0 ? 'C' : (v < 0 ? `L${Math.abs(v)}` : `R${v}`);
     });
-    ex2Freq.onChange(e => {
-      document.getElementById('ex2-freq-value').textContent = e.value;
+
+    // Example 3: Color Customization
+    const colorBaseOpts = {
+      mode: 'bounded',
+      min: 0,
+      max: 10,
+      value: 5,
+      step: 0.1,
+      size: 70,
+      showValueDisplay: true
+    };
+
+    // Neon cyan theme
+    const exColor1 = new Knob('#ex-color1', {
+      ...colorBaseOpts,
+      label: 'Neon',
+      dialColor: '#111111',
+      bezelColor: '#333333',
+      indicatorColor: '#64ffda',
+      tickColor: '#64ffda',
+      labelColor: '#64ffda',
+      valueDisplayColor: '#64ffda'
     });
 
-    // Example 3: Guitar Amp
+    // Vintage orange theme
+    const exColor2 = new Knob('#ex-color2', {
+      ...colorBaseOpts,
+      label: 'Vintage',
+      dialColor: '#2a2520',
+      bezelColor: '#8b7355',
+      indicatorColor: '#d4c4a8',
+      tickColor: '#96948e',
+      labelColor: '#ece8df',
+      valueDisplayColor: '#ff9500'
+    });
+
+    // Dieter Rams / Braun inspired theme
+    const exColor4 = new Knob('#ex-color4', {
+      ...colorBaseOpts,
+      label: 'Braun',
+      dialColor: '#cccccc',
+      bezelColor: '#777777',
+      indicatorColor: '#cc5555',
+      indicatorWidth: 7,
+      tickColor: '#c0c0bc',
+      labelColor: '#e8e8e4',
+      valueDisplayColor: '#cc5555'
+    });
+
+    // Example 4: Guitar Amp
     const ampStyle = {
       size: 55,
-      backgroundColor: '#FF1a1a00',
       dialColor: '#0a0a0a',
       indicatorColor: '#f0f0f0',
       tickColor: '#666',
@@ -713,7 +879,6 @@ sweep(0, 100, 1000); // 1 second sweep</code></pre>
 
     function createMixerChannel(prefix) {
       const pan = createPanKnob(`#${prefix}-pan`, { ...mixerStyle, label: 'Pan' });
-      const eq = createFrequencyKnob(`#${prefix}-eq`, { ...mixerStyle, label: 'EQ' });
       const gain = new Knob(`#${prefix}-gain`, {
         ...mixerStyle,
         mode: 'bounded',
@@ -732,14 +897,13 @@ sweep(0, 100, 1000); // 1 second sweep</code></pre>
         const gainVal = gain.getValue();
         const gainStr = gainVal > 0 ? `+${gainVal}` : gainVal;
         document.getElementById(`${prefix}-values`).innerHTML =
-          `Pan: ${panStr}<br>EQ: ${eq.getValue()}<br>Gain: ${gainStr}`;
+          `Pan: ${panStr}<br>Gain: ${gainStr}`;
       }
 
       pan.onChange(updateDisplay);
-      eq.onChange(updateDisplay);
       gain.onChange(updateDisplay);
 
-      return { pan, eq, gain };
+      return { pan, gain };
     }
 
     createMixerChannel('ex6-ch1');
@@ -782,11 +946,36 @@ sweep(0, 100, 1000); // 1 second sweep</code></pre>
       size: 80
     });
 
-    ex8Knob.onChange(e => document.getElementById('ex8-value').textContent = e.value.toFixed(0));
+    const ex8Slider = new Slider('#ex8-slider', {
+      min: 0,
+      max: 100,
+      value: 0,
+      step: 1,
+      length: 120,
+      showValueDisplay: true
+    });
 
-    document.getElementById('ex8-set-min').addEventListener('click', () => ex8Knob.setValue(0));
-    document.getElementById('ex8-set-mid').addEventListener('click', () => ex8Knob.setValue(50));
-    document.getElementById('ex8-set-max').addEventListener('click', () => ex8Knob.setValue(100));
+    // Sync knob and slider
+    ex8Knob.onChange(e => {
+      document.getElementById('ex8-value').textContent = e.value.toFixed(0);
+      ex8Slider.setValue(e.value);
+    });
+    ex8Slider.onChange(e => {
+      ex8Knob.setValue(e.value);
+    });
+
+    document.getElementById('ex8-set-min').addEventListener('click', () => {
+      ex8Knob.setValue(0);
+      ex8Slider.setValue(0);
+    });
+    document.getElementById('ex8-set-mid').addEventListener('click', () => {
+      ex8Knob.setValue(50);
+      ex8Slider.setValue(50);
+    });
+    document.getElementById('ex8-set-max').addEventListener('click', () => {
+      ex8Knob.setValue(100);
+      ex8Slider.setValue(100);
+    });
 
     document.getElementById('ex8-sweep').addEventListener('click', () => {
       const from = ex8Knob.getValue();
@@ -800,6 +989,7 @@ sweep(0, 100, 1000); // 1 second sweep</code></pre>
         const eased = 1 - (1 - progress) * (1 - progress);
         const value = from + (to - from) * eased;
         ex8Knob.setValue(value);
+        ex8Slider.setValue(value);
 
         if (progress < 1) {
           requestAnimationFrame(animate);
@@ -807,6 +997,32 @@ sweep(0, 100, 1000); // 1 second sweep</code></pre>
       }
 
       requestAnimationFrame(animate);
+    });
+
+    // Example: Sliders/Faders
+    const exSlider1 = createFader('#ex-slider1', {
+      label: 'Vol',
+      length: 120,
+      value: 0,
+      showValueDisplay: true
+    });
+
+    const exSlider2 = new Slider('#ex-slider2', {
+      min: 0,
+      max: 10,
+      value: 5,
+      step: 0.1,
+      length: 120,
+      label: 'Vol',
+      thumbColor: '#666',
+      trackColor: '#222',
+      showValueDisplay: true
+    });
+
+    const exSlider3 = createMuteFader('#ex-slider3', {
+      label: 'Vol',
+      length: 120,
+      showValueDisplay: true
     });
 
     console.log('Examples loaded!');

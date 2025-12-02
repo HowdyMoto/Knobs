@@ -89,11 +89,11 @@ export interface KnobOptions {
   /** Number of tick marks around the dial */
   tickCount?: number;
 
-  /** Background color of the knob body */
-  backgroundColor?: string;
-
   /** Color of the dial/indicator */
   dialColor?: string;
+
+  /** Color of the bezel (outer ring around the dial) */
+  bezelColor?: string;
 
   /** Color of the indicator line */
   indicatorColor?: string;
@@ -118,6 +118,12 @@ export interface KnobOptions {
 
   /** Font family for labels */
   fontFamily?: string;
+
+  /** Show a value display below the knob */
+  showValueDisplay?: boolean;
+
+  /** Color of the value display text (defaults to cyan #4ecdc4) */
+  valueDisplayColor?: string;
 
   /** Custom CSS class for the container */
   className?: string;
@@ -177,8 +183,8 @@ export const DEFAULT_OPTIONS = {
   showValueLabels: true,
   showTicks: true,
   tickCount: 11,
-  backgroundColor: '#2a2a2a',
   dialColor: '#1a1a1a',
+  bezelColor: '#444444',
   indicatorColor: '#ffffff',
   indicatorLength: 0.7,
   indicatorWidth: 3,
@@ -187,4 +193,172 @@ export const DEFAULT_OPTIONS = {
   tickColor: '#888888',
   labelColor: '#cccccc',
   fontFamily: 'Arial, sans-serif',
+  showValueDisplay: false,
+  valueDisplayColor: '#4ecdc4',
+};
+
+/**
+ * Configuration options for creating a Slider
+ */
+export interface SliderOptions {
+  /** Initial value of the slider */
+  value?: number;
+
+  /** Minimum value */
+  min?: number;
+
+  /** Maximum value */
+  max?: number;
+
+  /** Step increment for value changes */
+  step?: number;
+
+  /** Length (height) of the slider track in pixels */
+  length?: number;
+
+  /** Width of the slider in pixels */
+  width?: number;
+
+  /** Override global pixelsPerFullRotation for this slider */
+  pixelsPerFullTravel?: number;
+
+  /** Override global shiftMultiplier for this slider */
+  shiftMultiplier?: number;
+
+  /** Override global ctrlMultiplier for this slider */
+  ctrlMultiplier?: number;
+
+  /** Label text displayed below the slider */
+  label?: string;
+
+  /** Show tick marks along the track */
+  showTicks?: boolean;
+
+  /** Number of tick marks */
+  tickCount?: number;
+
+  /** Show value labels along the track */
+  showValueLabels?: boolean;
+
+  /** Custom value labels */
+  valueLabels?: string[];
+
+  /** Color of the track groove */
+  trackColor?: string;
+
+  /** Color of the thumb/fader cap */
+  thumbColor?: string;
+
+  /** Color of the tick marks */
+  tickColor?: string;
+
+  /** Color of the labels */
+  labelColor?: string;
+
+  /** Font family for labels */
+  fontFamily?: string;
+
+  /** Show toggle switch below slider */
+  showToggle?: boolean;
+
+  /** Initial toggle state */
+  toggleState?: boolean;
+
+  /** Label for the toggle (e.g., "Mute") */
+  toggleLabel?: string;
+
+  /** Color of the toggle LED when active */
+  toggleLedColor?: string;
+
+  /** Show a value display between label and toggle */
+  showValueDisplay?: boolean;
+
+  /** Custom CSS class for the container */
+  className?: string;
+}
+
+/**
+ * Event data emitted when the slider value changes
+ */
+export interface SliderChangeEvent {
+  /** The new value */
+  value: number;
+
+  /** The previous value */
+  previousValue: number;
+
+  /** Reference to the Slider instance */
+  slider: ISlider;
+}
+
+/**
+ * Event data emitted when the toggle state changes
+ */
+export interface ToggleChangeEvent {
+  /** The new toggle state */
+  state: boolean;
+
+  /** The previous toggle state */
+  previousState: boolean;
+
+  /** Reference to the Slider instance */
+  slider: ISlider;
+}
+
+/**
+ * Public interface for Slider instances
+ */
+export interface ISlider {
+  /** Get current value */
+  getValue(): number;
+
+  /** Set value programmatically */
+  setValue(value: number): void;
+
+  /** Get current toggle state */
+  getToggle(): boolean;
+
+  /** Set toggle state programmatically */
+  setToggle(state: boolean): void;
+
+  /** Destroy the slider and clean up event listeners */
+  destroy(): void;
+
+  /** Get the container element */
+  getElement(): HTMLElement;
+
+  /** Add event listener for value changes */
+  onChange(callback: (event: SliderChangeEvent) => void): void;
+
+  /** Add event listener for toggle changes */
+  onToggle(callback: (event: ToggleChangeEvent) => void): void;
+
+  /** Remove event listener */
+  off(event: 'change' | 'toggle', callback: Function): void;
+}
+
+/**
+ * Default slider configuration values
+ */
+export const DEFAULT_SLIDER_OPTIONS = {
+  value: 0,
+  min: 0,
+  max: 10,
+  step: 0.1,
+  length: 150,
+  width: 40,
+  label: '',
+  showTicks: true,
+  tickCount: 11,
+  showValueLabels: true,
+  trackColor: '#1a1a1a',
+  thumbColor: '#444444',
+  tickColor: '#888888',
+  labelColor: '#cccccc',
+  fontFamily: 'Arial, sans-serif',
+  showToggle: false,
+  toggleState: false,
+  toggleLabel: '',
+  toggleLedColor: '#00ff00',
+  showValueDisplay: false,
 };

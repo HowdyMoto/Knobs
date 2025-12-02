@@ -1,8 +1,5 @@
 import { KnobOptions, DEFAULT_OPTIONS } from './types';
 
-// SVG rendering constants
-const GRIP_RIDGE_COUNT = 24;
-
 // Rotation constants (shared with knob.ts via re-export)
 /** Total rotation range in degrees for unbounded knobs */
 export const TOTAL_ROTATION_DEGREES = 270;
@@ -128,14 +125,6 @@ export class SVGRenderer {
     const outerRadius = this.size / 2;
     const tickLength = outerRadius * 0.12;
 
-    // Background circle
-    const bg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    bg.setAttribute('cx', String(center));
-    bg.setAttribute('cy', String(center));
-    bg.setAttribute('r', String(outerRadius));
-    bg.setAttribute('fill', this.options.backgroundColor);
-    group.appendChild(bg);
-
     // Draw tick marks if enabled
     if (this.options.showTicks && this.options.mode === 'bounded') {
       const startAngle = this.options.startAngle;
@@ -149,8 +138,8 @@ export class SVGRenderer {
 
         const x1 = center + Math.cos(radians) * (outerRadius - tickLength);
         const y1 = center + Math.sin(radians) * (outerRadius - tickLength);
-        const x2 = center + Math.cos(radians) * (outerRadius - 2);
-        const y2 = center + Math.sin(radians) * (outerRadius - 2);
+        const x2 = center + Math.cos(radians) * (outerRadius );
+        const y2 = center + Math.sin(radians) * (outerRadius );
 
         const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
         tick.setAttribute('x1', String(x1));
@@ -234,7 +223,7 @@ export class SVGRenderer {
     outerRing.setAttribute('cx', String(center));
     outerRing.setAttribute('cy', String(center));
     outerRing.setAttribute('r', String(radius + 3));
-    outerRing.setAttribute('fill', '#444444');
+    outerRing.setAttribute('fill', this.options.bezelColor);
     outerRing.setAttribute('filter', `url(#${this.shadowFilterId})`);
     group.appendChild(outerRing);
 
@@ -245,26 +234,6 @@ export class SVGRenderer {
     body.setAttribute('r', String(radius));
     body.setAttribute('fill', `url(#${this.bodyGradientId})`);
     group.appendChild(body);
-
-    // Grip ridges (subtle texture)
-    for (let i = 0; i < GRIP_RIDGE_COUNT; i++) {
-      const angle = (360 / GRIP_RIDGE_COUNT) * i;
-      const radians = (angle - 90) * (Math.PI / 180);
-
-      const x1 = center + Math.cos(radians) * (radius * 0.85);
-      const y1 = center + Math.sin(radians) * (radius * 0.85);
-      const x2 = center + Math.cos(radians) * (radius * 0.95);
-      const y2 = center + Math.sin(radians) * (radius * 0.95);
-
-      const ridge = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      ridge.setAttribute('x1', String(x1));
-      ridge.setAttribute('y1', String(y1));
-      ridge.setAttribute('x2', String(x2));
-      ridge.setAttribute('y2', String(y2));
-      ridge.setAttribute('stroke', 'rgba(255,255,255,0.1)');
-      ridge.setAttribute('stroke-width', '1');
-      group.appendChild(ridge);
-    }
 
     return group;
   }
@@ -336,7 +305,7 @@ export class SVGRenderer {
       line.setAttribute('x1', String(center));
       line.setAttribute('y1', String(center - innerDistance));
       line.setAttribute('x2', String(center));
-      line.setAttribute('y2', String(center - radius + 2));
+      line.setAttribute('y2', String(center - radius - 4));
       line.setAttribute('stroke', this.options.indicatorColor);
       line.setAttribute('stroke-width', String(indicatorWidth));
       line.setAttribute('stroke-linecap', 'round');
