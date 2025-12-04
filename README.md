@@ -3,7 +3,7 @@
 Rotatable knob controls for audio/music web applications — like guitar amps and vintage stereos.
 
 ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
-![Synth Demo](images/synth-demo.png)
+![Synth Demo](images/Knobs.png)
 
 ## Features
 
