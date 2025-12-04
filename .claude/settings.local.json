@@ -5,7 +5,9 @@
       "Bash(cat:*)",
       "Bash(npm run build:*)",
       "Bash(npm install)",
-      "Bash(npm run examples:*)"
+      "Bash(npm run examples:*)",
+      "Bash(mkdir:*)",
+      "Bash(http-server:*)"
     ],
     "deny": [],
     "ask": []

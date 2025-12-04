@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synth Station - Knobs & Sliders Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(145deg, #0d0d0d 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100vh;
+      color: #fff;
+      padding: 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #4ecdc4, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      color: #666;
+      font-size: 12px;
+      margin-top: 8px;
+      letter-spacing: 2px;
+    }
+
+    .synth-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: linear-gradient(180deg, rgba(30, 30, 40, 0.9) 0%, rgba(20, 20, 30, 0.95) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .panel-title {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .panel-title span {
+      color: #4ecdc4;
+    }
+
+    /* Oscillator Section */
+    .oscillator-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .osc-panel {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+    }
+
+    .osc-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #4ecdc4;
+      margin-bottom: 15px;
+    }
+
+    .osc-title.osc2 { color: #a855f7; }
+    .osc-title.osc3 { color: #ec4899; }
+
+    .knob-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .knob-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Filter Section */
+    .filter-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .filter-knobs {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Envelope Section */
+    .envelope-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .envelope-group {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      min-width: 200px;
+    }
+
+    .envelope-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #f59e0b;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .envelope-title.filter-env { color: #10b981; }
+
+    .envelope-knobs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    /* Mixer Section */
+    .mixer-section {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .mixer-channel {
+      background: linear-gradient(180deg, #252530 0%, #1a1a24 100%);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 15px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      min-width: 70px;
+    }
+
+    .channel-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #666;
+    }
+
+    .channel-label.osc1 { color: #4ecdc4; }
+    .channel-label.osc2 { color: #a855f7; }
+    .channel-label.osc3 { color: #ec4899; }
+    .channel-label.noise { color: #f59e0b; }
+    .channel-label.master { color: #fff; }
+
+    /* Effects Section */
+    .effects-section {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .effect-panel {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+    }
+
+    .effect-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #3b82f6;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .effect-title.delay { color: #8b5cf6; }
+    .effect-title.reverb { color: #06b6d4; }
+    .effect-title.chorus { color: #84cc16; }
+
+    .effect-led {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #333;
+    }
+
+    .effect-led.active {
+      background: #4ade80;
+      box-shadow: 0 0 8px #4ade80;
+    }
+
+    .effect-knobs {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* LFO Section */
+    .lfo-section {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .lfo-panel {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      min-width: 180px;
+    }
+
+    .lfo-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #f472b6;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .lfo-title.lfo2 { color: #c084fc; }
+
+    .lfo-knobs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    /* Master Section */
+    .master-section {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .master-controls {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    /* Output Display */
+    .output-display {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      padding: 15px;
+      min-width: 300px;
+    }
+
+    .output-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 11px;
+    }
+
+    .output-row:last-child {
+      border-bottom: none;
+    }
+
+    .output-label {
+      color: #666;
+    }
+
+    .output-value {
+      font-family: 'Fira Code', monospace;
+      color: #4ecdc4;
+    }
+
+    /* Keyboard hint */
+    .keyboard-hint {
+      text-align: center;
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      font-size: 11px;
+      color: #666;
+    }
+
+    .keyboard-hint kbd {
+      background: #333;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Fira Code', monospace;
+      font-size: 10px;
+      color: #aaa;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .synth-container {
+        padding: 10px;
+      }
+
+      .panel {
+        padding: 15px;
+      }
+
+      .knob-row, .filter-knobs, .effect-knobs {
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Synth Station</h1>
+    <p>Knobs & Sliders Component Demo</p>
+  </div>
+
+  <div class="synth-container">
+    <!-- Oscillators -->
+    <div class="panel">
+      <div class="panel-title"><span>OSC</span> Oscillators</div>
+      <div class="oscillator-section">
+        <div class="osc-panel">
+          <div class="osc-title">OSC 1 - SAW</div>
+          <div class="knob-row">
+            <div id="osc1-pitch"></div>
+            <div id="osc1-fine"></div>
+            <div id="osc1-pw"></div>
+            <div id="osc1-level"></div>
+          </div>
+        </div>
+        <div class="osc-panel">
+          <div class="osc-title osc2">OSC 2 - SQUARE</div>
+          <div class="knob-row">
+            <div id="osc2-pitch"></div>
+            <div id="osc2-fine"></div>
+            <div id="osc2-pw"></div>
+            <div id="osc2-level"></div>
+          </div>
+        </div>
+        <div class="osc-panel">
+          <div class="osc-title osc3">OSC 3 - TRIANGLE</div>
+          <div class="knob-row">
+            <div id="osc3-pitch"></div>
+            <div id="osc3-fine"></div>
+            <div id="osc3-pw"></div>
+            <div id="osc3-level"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="panel">
+      <div class="panel-title"><span>VCF</span> Filter</div>
+      <div class="filter-section">
+        <div class="filter-knobs">
+          <div id="filter-cutoff"></div>
+          <div id="filter-resonance"></div>
+          <div id="filter-env"></div>
+          <div id="filter-key"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Envelopes -->
+    <div class="panel">
+      <div class="panel-title"><span>ENV</span> Envelopes</div>
+      <div class="envelope-section">
+        <div class="envelope-group">
+          <div class="envelope-title">AMP ENVELOPE</div>
+          <div class="envelope-knobs">
+            <div id="amp-attack"></div>
+            <div id="amp-decay"></div>
+            <div id="amp-sustain"></div>
+            <div id="amp-release"></div>
+          </div>
+        </div>
+        <div class="envelope-group">
+          <div class="envelope-title filter-env">FILTER ENVELOPE</div>
+          <div class="envelope-knobs">
+            <div id="flt-attack"></div>
+            <div id="flt-decay"></div>
+            <div id="flt-sustain"></div>
+            <div id="flt-release"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LFOs -->
+    <div class="panel">
+      <div class="panel-title"><span>LFO</span> Low Frequency Oscillators</div>
+      <div class="lfo-section">
+        <div class="lfo-panel">
+          <div class="lfo-title">LFO 1</div>
+          <div class="lfo-knobs">
+            <div id="lfo1-rate"></div>
+            <div id="lfo1-depth"></div>
+          </div>
+        </div>
+        <div class="lfo-panel">
+          <div class="lfo-title lfo2">LFO 2</div>
+          <div class="lfo-knobs">
+            <div id="lfo2-rate"></div>
+            <div id="lfo2-depth"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Effects -->
+    <div class="panel">
+      <div class="panel-title"><span>FX</span> Effects</div>
+      <div class="effects-section">
+        <div class="effect-panel">
+          <div class="effect-title delay">
+            <span class="effect-led" id="delay-led"></span>
+            DELAY
+          </div>
+          <div class="effect-knobs">
+            <div id="delay-time"></div>
+            <div id="delay-feedback"></div>
+            <div id="delay-mix"></div>
+          </div>
+        </div>
+        <div class="effect-panel">
+          <div class="effect-title reverb">
+            <span class="effect-led" id="reverb-led"></span>
+            REVERB
+          </div>
+          <div class="effect-knobs">
+            <div id="reverb-size"></div>
+            <div id="reverb-damp"></div>
+            <div id="reverb-mix"></div>
+          </div>
+        </div>
+        <div class="effect-panel">
+          <div class="effect-title chorus">
+            <span class="effect-led" id="chorus-led"></span>
+            CHORUS
+          </div>
+          <div class="effect-knobs">
+            <div id="chorus-rate"></div>
+            <div id="chorus-depth"></div>
+            <div id="chorus-mix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mixer -->
+    <div class="panel">
+      <div class="panel-title"><span>MIX</span> Mixer</div>
+      <div class="mixer-section">
+        <div class="mixer-channel">
+          <span class="channel-label osc1">OSC 1</span>
+          <div id="mix-osc1"></div>
+        </div>
+        <div class="mixer-channel">
+          <span class="channel-label osc2">OSC 2</span>
+          <div id="mix-osc2"></div>
+        </div>
+        <div class="mixer-channel">
+          <span class="channel-label osc3">OSC 3</span>
+          <div id="mix-osc3"></div>
+        </div>
+        <div class="mixer-channel">
+          <span class="channel-label noise">NOISE</span>
+          <div id="mix-noise"></div>
+        </div>
+        <div class="mixer-channel">
+          <span class="channel-label master">MASTER</span>
+          <div id="mix-master"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Master -->
+    <div class="panel">
+      <div class="panel-title"><span>OUT</span> Master Output</div>
+      <div class="master-section">
+        <div class="master-controls">
+          <div id="master-volume"></div>
+          <div id="master-pan"></div>
+          <div id="master-tune"></div>
+        </div>
+        <div class="output-display">
+          <div class="output-row">
+            <span class="output-label">Master Volume</span>
+            <span class="output-value" id="out-volume">0.0</span>
+          </div>
+          <div class="output-row">
+            <span class="output-label">Filter Cutoff</span>
+            <span class="output-value" id="out-cutoff">1000 Hz</span>
+          </div>
+          <div class="output-row">
+            <span class="output-label">LFO 1 Rate</span>
+            <span class="output-value" id="out-lfo">0.5 Hz</span>
+          </div>
+          <div class="output-row">
+            <span class="output-label">Delay Time</span>
+            <span class="output-value" id="out-delay">250 ms</span>
+          </div>
+          <div class="output-row">
+            <span class="output-label">Reverb Size</span>
+            <span class="output-value" id="out-reverb">50%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="keyboard-hint">
+    <kbd>Drag</kbd> to adjust &bull;
+    <kbd>Shift</kbd> + drag for fast &bull;
+    <kbd>Ctrl</kbd> + drag for fine
+  </div>
+
+  <script type="module">
+    import {
+      Knob,
+      Slider,
+      createFader,
+      createMuteFader,
+      configureKnobs
+    } from '../dist/knobs.esm.js';
+
+    // Configure global settings
+    configureKnobs({
+      pixelsPerFullRotation: 300,
+      shiftMultiplier: 4,
+      ctrlMultiplier: 0.2,
+    });
+
+    // Helper to create standard synth knob
+    function createSynthKnob(container, label, options = {}) {
+      return new Knob(container, {
+        mode: 'bounded',
+        min: 0,
+        max: 100,
+        value: 50,
+        size: 60,
+        step: 1,
+        label: label,
+        showTicks: false,
+        showValueLabels: false,
+        showValueDisplay: true,
+        dialColor: '#1a1a1a',
+        bezelColor: '#333',
+        indicatorColor: '#4ecdc4',
+        labelColor: '#bbb',
+        ...options,
+      });
+    }
+
+    // Helper to create encoder-style knob
+    function createEncoderKnob(container, label, options = {}) {
+      return new Knob(container, {
+        mode: 'bounded',
+        min: 0,
+        max: 100,
+        value: 50,
+        size: 50,
+        step: 1,
+        label: label,
+        showTicks: false,
+        showValueLabels: false,
+        gripBumps: true,
+        gripBumpCount: 16,
+        dialColor: '#2a2a2a',
+        bezelColor: '#444',
+        labelColor: '#aaa',
+        ...options,
+      });
+    }
+
+    // === OSCILLATORS ===
+
+    // OSC 1
+    const osc1Pitch = createSynthKnob('#osc1-pitch', 'Pitch', {
+      min: -24, max: 24, value: 0, step: 1,
+      indicatorColor: '#4ecdc4'
+    });
+    const osc1Fine = createSynthKnob('#osc1-fine', 'Fine', {
+      min: -50, max: 50, value: 0, step: 1,
+      indicatorColor: '#4ecdc4'
+    });
+    const osc1PW = createSynthKnob('#osc1-pw', 'PW', {
+      indicatorColor: '#4ecdc4'
+    });
+    const osc1Level = createSynthKnob('#osc1-level', 'Level', {
+      value: 80,
+      indicatorColor: '#4ecdc4'
+    });
+
+    // OSC 2
+    const osc2Pitch = createSynthKnob('#osc2-pitch', 'Pitch', {
+      min: -24, max: 24, value: 0, step: 1,
+      indicatorColor: '#a855f7'
+    });
+    const osc2Fine = createSynthKnob('#osc2-fine', 'Fine', {
+      min: -50, max: 50, value: 0, step: 1,
+      indicatorColor: '#a855f7'
+    });
+    const osc2PW = createSynthKnob('#osc2-pw', 'PW', {
+      indicatorColor: '#a855f7'
+    });
+    const osc2Level = createSynthKnob('#osc2-level', 'Level', {
+      value: 60,
+      indicatorColor: '#a855f7'
+    });
+
+    // OSC 3
+    const osc3Pitch = createSynthKnob('#osc3-pitch', 'Pitch', {
+      min: -24, max: 24, value: -12, step: 1,
+      indicatorColor: '#ec4899'
+    });
+    const osc3Fine = createSynthKnob('#osc3-fine', 'Fine', {
+      min: -50, max: 50, value: 0, step: 1,
+      indicatorColor: '#ec4899'
+    });
+    const osc3PW = createSynthKnob('#osc3-pw', 'PW', {
+      indicatorColor: '#ec4899'
+    });
+    const osc3Level = createSynthKnob('#osc3-level', 'Level', {
+      value: 40,
+      indicatorColor: '#ec4899'
+    });
+
+    // === FILTER ===
+    const filterCutoff = new Knob('#filter-cutoff', {
+      mode: 'bounded',
+      min: 20,
+      max: 20000,
+      value: 1000,
+      size: 80,
+      step: 1,
+      label: 'Cutoff',
+      showTicks: true,
+      tickCount: 5,
+      showValueLabels: true,
+      valueLabels: ['20', '200', '2k', '8k', '20k'],
+      showValueDisplay: true,
+      dialColor: '#1a1a1a',
+      bezelColor: '#444',
+      indicatorColor: '#f59e0b',
+      labelColor: '#bbb',
+      tickColor: '#999',
+    });
+
+    const filterResonance = createSynthKnob('#filter-resonance', 'Reso', {
+      size: 70,
+      value: 30,
+      indicatorColor: '#f59e0b'
+    });
+
+    const filterEnvAmt = createSynthKnob('#filter-env', 'Env Amt', {
+      size: 70,
+      min: -100,
+      max: 100,
+      value: 50,
+      indicatorColor: '#f59e0b'
+    });
+
+    const filterKeyTrack = createSynthKnob('#filter-key', 'Key Trk', {
+      size: 70,
+      value: 50,
+      indicatorColor: '#f59e0b'
+    });
+
+    // === ENVELOPES ===
+
+    // Amp Envelope
+    const ampAttack = createEncoderKnob('#amp-attack', 'A', {
+      max: 1000, value: 10, step: 1
+    });
+    const ampDecay = createEncoderKnob('#amp-decay', 'D', {
+      max: 1000, value: 200, step: 1
+    });
+    const ampSustain = createEncoderKnob('#amp-sustain', 'S', {
+      value: 70
+    });
+    const ampRelease = createEncoderKnob('#amp-release', 'R', {
+      max: 2000, value: 300, step: 1
+    });
+
+    // Filter Envelope
+    const fltAttack = createEncoderKnob('#flt-attack', 'A', {
+      max: 1000, value: 5, step: 1
+    });
+    const fltDecay = createEncoderKnob('#flt-decay', 'D', {
+      max: 1000, value: 400, step: 1
+    });
+    const fltSustain = createEncoderKnob('#flt-sustain', 'S', {
+      value: 30
+    });
+    const fltRelease = createEncoderKnob('#flt-release', 'R', {
+      max: 2000, value: 500, step: 1
+    });
+
+    // === LFOs ===
+    const lfo1Rate = createSynthKnob('#lfo1-rate', 'Rate', {
+      min: 0.1, max: 20, value: 0.5, step: 0.1,
+      indicatorColor: '#f472b6'
+    });
+    const lfo1Depth = createSynthKnob('#lfo1-depth', 'Depth', {
+      value: 30,
+      indicatorColor: '#f472b6'
+    });
+
+    const lfo2Rate = createSynthKnob('#lfo2-rate', 'Rate', {
+      min: 0.1, max: 20, value: 2, step: 0.1,
+      indicatorColor: '#c084fc'
+    });
+    const lfo2Depth = createSynthKnob('#lfo2-depth', 'Depth', {
+      value: 20,
+      indicatorColor: '#c084fc'
+    });
+
+    // === EFFECTS ===
+
+    // Delay
+    const delayTime = createSynthKnob('#delay-time', 'Time', {
+      min: 10, max: 1000, value: 250, step: 1,
+      indicatorColor: '#8b5cf6'
+    });
+    const delayFeedback = createSynthKnob('#delay-feedback', 'Fdbk', {
+      value: 40,
+      indicatorColor: '#8b5cf6'
+    });
+    const delayMix = createSynthKnob('#delay-mix', 'Mix', {
+      value: 30,
+      indicatorColor: '#8b5cf6'
+    });
+
+    // Reverb
+    const reverbSize = createSynthKnob('#reverb-size', 'Size', {
+      value: 50,
+      indicatorColor: '#06b6d4'
+    });
+    const reverbDamp = createSynthKnob('#reverb-damp', 'Damp', {
+      value: 60,
+      indicatorColor: '#06b6d4'
+    });
+    const reverbMix = createSynthKnob('#reverb-mix', 'Mix', {
+      value: 25,
+      indicatorColor: '#06b6d4'
+    });
+
+    // Chorus
+    const chorusRate = createSynthKnob('#chorus-rate', 'Rate', {
+      min: 0.1, max: 5, value: 1, step: 0.1,
+      indicatorColor: '#84cc16'
+    });
+    const chorusDepth = createSynthKnob('#chorus-depth', 'Depth', {
+      value: 50,
+      indicatorColor: '#84cc16'
+    });
+    const chorusMix = createSynthKnob('#chorus-mix', 'Mix', {
+      value: 30,
+      indicatorColor: '#84cc16'
+    });
+
+    // === MIXER (Sliders) ===
+    const mixOsc1 = createMuteFader('#mix-osc1', {
+      value: 8,
+      length: 120,
+      width: 35,
+      showValueLabels: false,
+      showValueDisplay: true,
+      toggleLabel: 'M',
+    });
+
+    const mixOsc2 = createMuteFader('#mix-osc2', {
+      value: 6,
+      length: 120,
+      width: 35,
+      showValueLabels: false,
+      showValueDisplay: true,
+      toggleLabel: 'M',
+    });
+
+    const mixOsc3 = createMuteFader('#mix-osc3', {
+      value: 4,
+      length: 120,
+      width: 35,
+      showValueLabels: false,
+      showValueDisplay: true,
+      toggleLabel: 'M',
+    });
+
+    const mixNoise = createMuteFader('#mix-noise', {
+      value: 0,
+      length: 120,
+      width: 35,
+      showValueLabels: false,
+      showValueDisplay: true,
+      toggleLabel: 'M',
+    });
+
+    const mixMaster = createFader('#mix-master', {
+      value: 7,
+      length: 120,
+      width: 35,
+      showValueLabels: false,
+      showValueDisplay: true,
+      label: '',
+    });
+
+    // === MASTER ===
+    const masterVolume = new Knob('#master-volume', {
+      mode: 'bounded',
+      min: 0,
+      max: 11,
+      value: 7,
+      size: 90,
+      step: 0.1,
+      label: 'Volume',
+      showTicks: true,
+      tickCount: 12,
+      showValueLabels: true,
+      valueLabels: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'],
+      showValueDisplay: true,
+      dialColor: '#1a1a1a',
+      bezelColor: '#555',
+      indicatorColor: '#fff',
+      indicatorWidth: 4,
+      labelColor: '#ddd',
+      tickColor: '#999',
+    });
+
+    const masterPan = new Knob('#master-pan', {
+      mode: 'bounded',
+      min: -100,
+      max: 100,
+      value: 0,
+      size: 70,
+      step: 1,
+      label: 'Pan',
+      showTicks: true,
+      tickCount: 5,
+      showValueLabels: true,
+      valueLabels: ['L', '', 'C', '', 'R'],
+      dialColor: '#1a1a1a',
+      bezelColor: '#444',
+      indicatorColor: '#4ecdc4',
+      labelColor: '#bbb',
+      tickColor: '#999',
+    });
+
+    const masterTune = new Knob('#master-tune', {
+      mode: 'bounded',
+      min: -100,
+      max: 100,
+      value: 0,
+      size: 70,
+      step: 1,
+      label: 'Tune',
+      showTicks: true,
+      tickCount: 5,
+      showValueLabels: true,
+      valueLabels: ['-100', '-50', '0', '+50', '+100'],
+      dialColor: '#1a1a1a',
+      bezelColor: '#444',
+      indicatorColor: '#f59e0b',
+      labelColor: '#bbb',
+      tickColor: '#999',
+    });
+
+    // === UPDATE DISPLAYS ===
+    function updateDisplays() {
+      document.getElementById('out-volume').textContent = masterVolume.getValue().toFixed(1);
+      document.getElementById('out-cutoff').textContent = Math.round(filterCutoff.getValue()) + ' Hz';
+      document.getElementById('out-lfo').textContent = lfo1Rate.getValue().toFixed(1) + ' Hz';
+      document.getElementById('out-delay').textContent = Math.round(delayTime.getValue()) + ' ms';
+      document.getElementById('out-reverb').textContent = Math.round(reverbSize.getValue()) + '%';
+    }
+
+    // Update effect LEDs based on mix values
+    function updateEffectLEDs() {
+      document.getElementById('delay-led').classList.toggle('active', delayMix.getValue() > 0);
+      document.getElementById('reverb-led').classList.toggle('active', reverbMix.getValue() > 0);
+      document.getElementById('chorus-led').classList.toggle('active', chorusMix.getValue() > 0);
+    }
+
+    // Connect change handlers
+    masterVolume.onChange(updateDisplays);
+    filterCutoff.onChange(updateDisplays);
+    lfo1Rate.onChange(updateDisplays);
+    delayTime.onChange(updateDisplays);
+    reverbSize.onChange(updateDisplays);
+
+    delayMix.onChange(updateEffectLEDs);
+    reverbMix.onChange(updateEffectLEDs);
+    chorusMix.onChange(updateEffectLEDs);
+
+    // Initial update
+    updateDisplays();
+    updateEffectLEDs();
+
+    console.log('Synth Station loaded!');
+  </script>
+</body>
+</html>
