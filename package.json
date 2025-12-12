@@ -5,6 +5,13 @@
   "main": "dist/knobs.js",
   "module": "dist/knobs.esm.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/knobs.esm.js",
+      "require": "./dist/knobs.js"
+    }
+  },
   "files": [
     "dist",
     "examples"
