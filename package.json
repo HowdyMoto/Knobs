@@ -4,7 +4,7 @@
   "description": "Rotatable knob controls for audio/music web apps - like guitar amps and vintage stereos",
   "main": "dist/knobs.js",
   "module": "dist/knobs.esm.js",
-  "types": "dist/knobs.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "examples"
