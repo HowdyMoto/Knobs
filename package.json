@@ -1,7 +1,7 @@
 {
-  "name": "knobs",
+  "name": "audio-knobs",
   "version": "1.0.0",
-  "description": "Rotatable knob controls for audio/music web apps - like guitar amps and vintage stereos",
+  "description": "Rotatable knob and slider controls for audio/music web apps - like guitar amps and vintage stereos",
   "main": "dist/knobs.js",
   "module": "dist/knobs.esm.js",
   "types": "dist/index.d.ts",
@@ -13,24 +13,38 @@
     }
   },
   "files": [
-    "dist",
-    "examples"
+    "dist"
   ],
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HowdyMoto/Knobs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HowdyMoto/Knobs/issues"
+  },
+  "homepage": "https://github.com/HowdyMoto/Knobs#readme",
   "scripts": {
     "build": "tsc && npm run bundle",
     "bundle": "esbuild src/index.ts --bundle --outfile=dist/knobs.js --format=iife --global-name=Knobs && esbuild src/index.ts --bundle --outfile=dist/knobs.esm.js --format=esm",
     "dev": "tsc --watch",
     "watch": "esbuild src/index.ts --bundle --outfile=dist/knobs.esm.js --format=esm --watch",
-    "examples": "http-server . -p 8080 -o examples/index.html"
+    "examples": "http-server . -p 8080 -o examples/index.html",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "knob",
     "dial",
+    "slider",
+    "fader",
     "audio",
     "music",
     "ui",
     "control",
-    "svg"
+    "svg",
+    "web-audio",
+    "synthesizer",
+    "mixer"
   ],
   "author": "Wright Bagwell",
   "license": "MIT",

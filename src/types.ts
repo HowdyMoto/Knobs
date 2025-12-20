@@ -127,6 +127,14 @@ export interface KnobOptions {
 
   /** Custom CSS class for the container */
   className?: string;
+
+  /**
+   * Custom SVG markup for the knob dial.
+   * When provided, replaces the default knob body and dial with your custom SVG.
+   * The SVG should define a viewBox (e.g., "0 0 100 100") - it will be scaled to fit.
+   * The entire SVG rotates as a unit around the center.
+   */
+  knobSvg?: string;
 }
 
 /**
