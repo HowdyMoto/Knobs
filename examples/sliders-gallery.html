@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slider Styles Gallery - Audio Knobs</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%);
+      padding: 30px 20px;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .back-link {
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 400;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+    }
+
+    .section h2 {
+      font-size: 1.4rem;
+      font-weight: 500;
+      margin: 0 0 10px 0;
+      color: #fff;
+    }
+
+    .section p {
+      color: #8b949e;
+      margin: 0 0 25px 0;
+    }
+
+    .gallery-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      padding: 30px;
+      border-radius: 12px;
+      align-items: flex-start;
+    }
+
+    /* Background themes */
+    .bg-dark {
+      background: #161b22;
+      border: 1px solid #30363d;
+    }
+
+    .bg-darker {
+      background: #0a0a0a;
+      border: 1px solid #222;
+    }
+
+    .bg-gradient-blue {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border: 1px solid #30363d;
+    }
+
+    .bg-console {
+      background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+      border: 1px solid #3a3a3a;
+    }
+
+    .bg-wood {
+      background: linear-gradient(180deg, #3d2b1f 0%, #2a1f15 100%);
+      border: 1px solid #4a3728;
+    }
+
+    .bg-cream {
+      background: linear-gradient(180deg, #f5f0e6 0%, #e8e0d0 100%);
+      border: 1px solid #d4c9b8;
+    }
+
+    .bg-teal {
+      background: linear-gradient(180deg, #1a535c 0%, #0d3b42 100%);
+      border: 1px solid #2a6570;
+    }
+
+    .slider-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .slider-label {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #8b949e;
+      text-align: center;
+    }
+
+    .bg-cream .slider-label {
+      color: #555;
+    }
+
+    /* Mixer channel styling */
+    .mixer-strip {
+      background: linear-gradient(180deg, #333 0%, #222 100%);
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 15px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .channel-label {
+      font-size: 10px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #8b949e;
+      border-top: 1px solid #30363d;
+    }
+
+    footer a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="index.html" class="back-link">← Back to Examples</a>
+      <h1>Slider Styles Gallery</h1>
+      <div style="width: 120px;"></div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Default Sizes -->
+    <section class="section">
+      <h2>Default Styles & Sizes</h2>
+      <p>Standard sliders with different heights.</p>
+      <div class="gallery-row bg-dark">
+        <div class="slider-item" id="size-small"></div>
+        <div class="slider-item" id="size-medium"></div>
+        <div class="slider-item" id="size-large"></div>
+        <div class="slider-item" id="size-xlarge"></div>
+      </div>
+    </section>
+
+    <!-- Mixer Console -->
+    <section class="section">
+      <h2>Mixer Console</h2>
+      <p>Professional mixing console style with channel strips.</p>
+      <div class="gallery-row bg-console">
+        <div class="mixer-strip">
+          <span class="channel-label">CH 1</span>
+          <div id="mixer-1"></div>
+        </div>
+        <div class="mixer-strip">
+          <span class="channel-label">CH 2</span>
+          <div id="mixer-2"></div>
+        </div>
+        <div class="mixer-strip">
+          <span class="channel-label">CH 3</span>
+          <div id="mixer-3"></div>
+        </div>
+        <div class="mixer-strip">
+          <span class="channel-label">CH 4</span>
+          <div id="mixer-4"></div>
+        </div>
+        <div class="mixer-strip">
+          <span class="channel-label">Master</span>
+          <div id="mixer-master"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- With Toggles -->
+    <section class="section">
+      <h2>With Mute Toggles</h2>
+      <p>Faders with integrated mute/solo buttons and LED indicators.</p>
+      <div class="gallery-row bg-darker">
+        <div class="slider-item" id="toggle-1"></div>
+        <div class="slider-item" id="toggle-2"></div>
+        <div class="slider-item" id="toggle-3"></div>
+        <div class="slider-item" id="toggle-4"></div>
+      </div>
+    </section>
+
+    <!-- Value Displays -->
+    <section class="section">
+      <h2>With Value Displays</h2>
+      <p>Real-time numeric readouts for precise control.</p>
+      <div class="gallery-row bg-gradient-blue">
+        <div class="slider-item" id="display-1"></div>
+        <div class="slider-item" id="display-2"></div>
+        <div class="slider-item" id="display-3"></div>
+      </div>
+    </section>
+
+    <!-- Colorful -->
+    <section class="section">
+      <h2>Colorful Themes</h2>
+      <p>Custom colored tracks and thumbs.</p>
+      <div class="gallery-row bg-dark">
+        <div class="slider-item" id="color-cyan"></div>
+        <div class="slider-item" id="color-orange"></div>
+        <div class="slider-item" id="color-pink"></div>
+        <div class="slider-item" id="color-green"></div>
+        <div class="slider-item" id="color-purple"></div>
+      </div>
+    </section>
+
+    <!-- Vintage/Wood -->
+    <section class="section">
+      <h2>Vintage Style</h2>
+      <p>Warm, vintage aesthetics for classic gear.</p>
+      <div class="gallery-row bg-wood">
+        <div class="slider-item" id="vintage-1"></div>
+        <div class="slider-item" id="vintage-2"></div>
+        <div class="slider-item" id="vintage-3"></div>
+        <div class="slider-item" id="vintage-4"></div>
+      </div>
+    </section>
+
+    <!-- Hi-Fi / Clean -->
+    <section class="section">
+      <h2>Hi-Fi / Clean</h2>
+      <p>Minimalist design for modern applications.</p>
+      <div class="gallery-row bg-cream">
+        <div class="slider-item" id="hifi-1"></div>
+        <div class="slider-item" id="hifi-2"></div>
+        <div class="slider-item" id="hifi-3"></div>
+        <div class="slider-item" id="hifi-4"></div>
+      </div>
+    </section>
+
+    <!-- Compact -->
+    <section class="section">
+      <h2>Compact / Minimal</h2>
+      <p>Space-efficient sliders without ticks or labels.</p>
+      <div class="gallery-row bg-darker">
+        <div class="slider-item" id="compact-1"></div>
+        <div class="slider-item" id="compact-2"></div>
+        <div class="slider-item" id="compact-3"></div>
+        <div class="slider-item" id="compact-4"></div>
+        <div class="slider-item" id="compact-5"></div>
+        <div class="slider-item" id="compact-6"></div>
+        <div class="slider-item" id="compact-7"></div>
+        <div class="slider-item" id="compact-8"></div>
+      </div>
+    </section>
+
+    <!-- Teal & Orange -->
+    <section class="section">
+      <h2>Teal & Orange Theme</h2>
+      <p>Complementary color scheme for visual impact.</p>
+      <div class="gallery-row bg-teal">
+        <div class="slider-item" id="teal-1"></div>
+        <div class="slider-item" id="teal-2"></div>
+        <div class="slider-item" id="teal-3"></div>
+        <div class="slider-item" id="teal-4"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <a href="index.html">← Back to Examples</a>
+  </footer>
+
+  <script type="module">
+    import { Slider, createFader, createMuteFader } from '../dist/knobs.esm.js';
+
+    // Default Sizes
+    new Slider('#size-small', { min: 0, max: 10, value: 3, length: 80, label: 'Small' });
+    new Slider('#size-medium', { min: 0, max: 10, value: 5, length: 120, label: 'Medium' });
+    new Slider('#size-large', { min: 0, max: 10, value: 7, length: 160, label: 'Large' });
+    new Slider('#size-xlarge', { min: 0, max: 10, value: 8, length: 200, label: 'X-Large' });
+
+    // Mixer Console
+    const mixerStyle = { length: 140, tickCount: 11 };
+    new Slider('#mixer-1', { ...mixerStyle, value: 7, label: 'Vol' });
+    new Slider('#mixer-2', { ...mixerStyle, value: 5, label: 'Vol' });
+    new Slider('#mixer-3', { ...mixerStyle, value: 8, label: 'Vol' });
+    new Slider('#mixer-4', { ...mixerStyle, value: 4, label: 'Vol' });
+    new Slider('#mixer-master', { ...mixerStyle, value: 7, label: 'Vol', thumbColor: '#cc4444' });
+
+    // With Toggles
+    createMuteFader('#toggle-1', { length: 140, value: 7, label: 'CH 1' });
+    createMuteFader('#toggle-2', { length: 140, value: 5, label: 'CH 2' });
+    createMuteFader('#toggle-3', { length: 140, value: 8, label: 'CH 3', toggleLedColor: '#00ff00', toggleLabel: 'Solo' });
+    createMuteFader('#toggle-4', { length: 140, value: 6, label: 'CH 4', toggleLedColor: '#ffaa00', toggleLabel: 'Rec' });
+
+    // Value Displays
+    new Slider('#display-1', {
+      min: 0, max: 100, value: 42, length: 150, label: 'Volume',
+      showValueDisplay: true, thumbColor: '#4ecdc4', trackColor: '#1a1a1a'
+    });
+    new Slider('#display-2', {
+      min: -24, max: 12, value: 0, length: 150, label: 'Gain (dB)',
+      showValueDisplay: true, thumbColor: '#ff6b6b', trackColor: '#1a1a1a',
+      tickCount: 7, valueLabels: ['-24', '-16', '-8', '0', '4', '8', '12']
+    });
+    new Slider('#display-3', {
+      min: 0, max: 100, value: 75, length: 150, label: 'Mix',
+      showValueDisplay: true, thumbColor: '#ffe66d', trackColor: '#1a1a1a'
+    });
+
+    // Colorful
+    new Slider('#color-cyan', { min: 0, max: 10, value: 6, length: 130, label: 'Cyan', thumbColor: '#00d4ff', trackColor: '#0a2a30' });
+    new Slider('#color-orange', { min: 0, max: 10, value: 4, length: 130, label: 'Orange', thumbColor: '#ff6b35', trackColor: '#2a1510' });
+    new Slider('#color-pink', { min: 0, max: 10, value: 8, length: 130, label: 'Pink', thumbColor: '#ff69b4', trackColor: '#2a1525' });
+    new Slider('#color-green', { min: 0, max: 10, value: 5, length: 130, label: 'Green', thumbColor: '#00ff88', trackColor: '#0a2a15' });
+    new Slider('#color-purple', { min: 0, max: 10, value: 7, length: 130, label: 'Purple', thumbColor: '#9966ff', trackColor: '#1a152a' });
+
+    // Vintage
+    const vintageStyle = {
+      length: 140, thumbColor: '#8b7355', trackColor: '#2a1f15',
+      tickColor: '#6b5545', labelColor: '#d4c4a8'
+    };
+    new Slider('#vintage-1', { ...vintageStyle, value: 6, label: 'Volume' });
+    new Slider('#vintage-2', { ...vintageStyle, value: 4, label: 'Tone' });
+    new Slider('#vintage-3', { ...vintageStyle, value: 7, label: 'Drive' });
+    new Slider('#vintage-4', { ...vintageStyle, value: 5, label: 'Level' });
+
+    // Hi-Fi / Clean
+    const hifiStyle = {
+      length: 140, thumbColor: '#cccccc', trackColor: '#aaaaaa',
+      tickColor: '#888888', labelColor: '#444444'
+    };
+    new Slider('#hifi-1', { ...hifiStyle, value: 7, label: 'Volume' });
+    new Slider('#hifi-2', { ...hifiStyle, value: 5, label: 'Bass' });
+    new Slider('#hifi-3', { ...hifiStyle, value: 5, label: 'Treble' });
+    new Slider('#hifi-4', { ...hifiStyle, value: 6, label: 'Balance' });
+
+    // Compact
+    const compactStyle = {
+      length: 100, width: 30, showTicks: false, showValueLabels: false
+    };
+    for (let i = 1; i <= 8; i++) {
+      new Slider(`#compact-${i}`, { ...compactStyle, value: Math.random() * 10 });
+    }
+
+    // Teal & Orange
+    const tealStyle = {
+      length: 150, thumbColor: '#ff6b35', trackColor: '#0d3b42',
+      tickColor: '#ff8c55', labelColor: '#fff'
+    };
+    new Slider('#teal-1', { ...tealStyle, value: 6, label: 'Attack' });
+    new Slider('#teal-2', { ...tealStyle, value: 4, label: 'Decay' });
+    new Slider('#teal-3', { ...tealStyle, value: 7, label: 'Sustain' });
+    new Slider('#teal-4', { ...tealStyle, value: 3, label: 'Release' });
+
+    console.log('Sliders gallery loaded!');
+  </script>
+</body>
+</html>

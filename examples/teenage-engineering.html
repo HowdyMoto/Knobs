@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AK-47 Synth - Audio Knobs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 40px 20px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      color: #666;
+      text-decoration: none;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+
+    .back-link:hover {
+      color: #333;
+    }
+
+    .synth-container {
+      background: linear-gradient(180deg, #e8e8e8 0%, #d8d8d8 100%);
+      border-radius: 12px;
+      padding: 0;
+      box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.12),
+        0 1px 3px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      max-width: 900px;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .synth-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: #e0e0e0;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .synth-logo {
+      font-size: 10px;
+      font-weight: 600;
+      color: #888;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .synth-model {
+      font-size: 11px;
+      font-weight: 500;
+      color: #666;
+      letter-spacing: 1px;
+    }
+
+    .synth-body {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0;
+      padding: 20px;
+      align-items: start;
+    }
+
+    /* Speaker grille */
+    .speaker-section {
+      width: 60px;
+      height: 100px;
+      background: #f0f0f0;
+      border-radius: 6px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(10, 1fr);
+      gap: 3px;
+      padding: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .speaker-hole {
+      width: 4px;
+      height: 4px;
+      background: #bbb;
+      border-radius: 50%;
+    }
+
+    /* Display area */
+    .display-section {
+      background: #111;
+      border-radius: 4px;
+      margin: 0 20px;
+      padding: 15px;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      border: 2px solid #222;
+    }
+
+    .display-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .display-mode {
+      font-size: 10px;
+      color: #666;
+      font-weight: 500;
+    }
+
+    .display-time {
+      font-size: 10px;
+      color: #666;
+      font-family: monospace;
+    }
+
+    .display-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+    }
+
+    .display-knob-visual {
+      width: 50px;
+      height: 50px;
+      border: 2px solid #444;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .display-knob-visual::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 10px;
+      background: #fff;
+    }
+
+    .display-value {
+      font-size: 24px;
+      font-weight: 300;
+      color: #fff;
+      font-family: monospace;
+    }
+
+    .display-value span {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .waveform-canvas {
+      width: 100%;
+      height: 40px;
+      margin-top: 10px;
+    }
+
+    .display-bar {
+      height: 4px;
+      background: #222;
+      border-radius: 2px;
+      margin-top: 10px;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .bar-segment {
+      flex: 1;
+      height: 100%;
+      margin-right: 1px;
+    }
+
+    .bar-segment.active { background: #fff; }
+    .bar-segment.orange { background: #e67e22; }
+    .bar-segment.dim { background: #333; }
+
+    /* Colored knobs section */
+    .knobs-section {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .knob-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* Control panel below */
+    .controls-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 15px;
+      padding: 20px;
+      background: #e4e4e4;
+      border-top: 1px solid #d0d0d0;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-group-label {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: #888;
+      font-weight: 600;
+    }
+
+    .control-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    /* Button styles - OP-1 style */
+    .button-panel {
+      display: flex;
+      gap: 8px;
+      padding: 15px 20px;
+      background: #ddd;
+      border-top: 1px solid #ccc;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .te-button {
+      min-width: 50px;
+      height: 32px;
+      border-radius: 4px;
+      border: none;
+      background: #f8f8f8;
+      color: #333;
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.1s;
+      box-shadow:
+        0 2px 0 #ccc,
+        0 3px 3px rgba(0,0,0,0.1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .te-button:hover {
+      background: #fff;
+    }
+
+    .te-button:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 0 #ccc;
+    }
+
+    .te-button.playing {
+      background: #2ecc71;
+      color: #fff;
+      box-shadow: 0 2px 0 #27ae60;
+    }
+
+    .te-button.rec {
+      background: #e74c3c;
+      color: #fff;
+      box-shadow: 0 2px 0 #c0392b;
+      width: 32px;
+      min-width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      padding: 0;
+    }
+
+    .te-button.black {
+      background: #333;
+      color: #fff;
+      box-shadow: 0 2px 0 #111;
+      width: 40px;
+      min-width: 40px;
+      height: 32px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-info {
+      padding: 15px 20px;
+      text-align: right;
+      font-size: 9px;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 500;
+      background: #e0e0e0;
+    }
+
+    @media (max-width: 700px) {
+      .synth-body {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .speaker-section {
+        display: none;
+      }
+
+      .display-section {
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-link">← Back</a>
+
+  <div class="synth-container">
+    <div class="synth-top-bar">
+      <span class="synth-logo">audio knobs</span>
+      <span class="synth-model">AK-47 synth</span>
+    </div>
+
+    <div class="synth-body">
+      <!-- Speaker grille -->
+      <div class="speaker-section" id="speaker">
+        <!-- Holes generated by JS -->
+      </div>
+
+      <!-- OLED Display -->
+      <div class="display-section">
+        <div class="display-top">
+          <span class="display-mode" id="mode-display">synth</span>
+          <span class="display-time" id="time-display">0:00:00</span>
+        </div>
+        <div class="display-main">
+          <div class="display-knob-visual" id="knob-visual-1"></div>
+          <div class="display-value" id="freq-display">440 <span>Hz</span></div>
+          <div class="display-knob-visual" id="knob-visual-2"></div>
+        </div>
+        <canvas class="waveform-canvas" id="waveform"></canvas>
+        <div class="display-bar" id="level-bar">
+          <!-- Segments generated by JS -->
+        </div>
+      </div>
+
+      <!-- Colored encoder knobs -->
+      <div class="knobs-section">
+        <div class="knob-row">
+          <div id="knob-blue"></div>
+          <div id="knob-green"></div>
+        </div>
+        <div class="knob-row">
+          <div id="knob-white"></div>
+          <div id="knob-orange"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Control knobs panel -->
+    <div class="controls-panel">
+      <div class="control-group">
+        <span class="control-group-label">Oscillator</span>
+        <div class="control-row">
+          <div id="osc-freq"></div>
+          <div id="osc-shape"></div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <span class="control-group-label">Filter</span>
+        <div class="control-row">
+          <div id="filter-cutoff"></div>
+          <div id="filter-res"></div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <span class="control-group-label">Envelope</span>
+        <div class="control-row">
+          <div id="env-attack"></div>
+          <div id="env-decay"></div>
+          <div id="env-sustain"></div>
+          <div id="env-release"></div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <span class="control-group-label">Output</span>
+        <div class="control-row">
+          <div id="out-volume"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Button panel -->
+    <div class="button-panel">
+      <button class="te-button rec" id="rec-btn"></button>
+      <button class="te-button black" id="play-btn">▶</button>
+      <button class="te-button black" id="stop-btn">■</button>
+      <button class="te-button" id="wave-btn">Wave</button>
+      <button class="te-button" id="oct-down">Oct−</button>
+      <button class="te-button" id="oct-up">Oct+</button>
+    </div>
+
+    <div class="footer-info">
+      AK-47 synth
+    </div>
+  </div>
+
+  <script type="module">
+    import { Knob } from '../dist/knobs.esm.js';
+
+    // Generate speaker holes
+    const speaker = document.getElementById('speaker');
+    for (let i = 0; i < 60; i++) {
+      const hole = document.createElement('div');
+      hole.className = 'speaker-hole';
+      speaker.appendChild(hole);
+    }
+
+    // Generate level bar segments
+    const levelBar = document.getElementById('level-bar');
+    for (let i = 0; i < 20; i++) {
+      const seg = document.createElement('div');
+      seg.className = 'bar-segment ' + (i < 12 ? 'active' : (i < 16 ? 'orange' : 'dim'));
+      levelBar.appendChild(seg);
+    }
+
+    // OP-1 style: Clean white/grey knobs with colored accents
+    const op1BaseStyle = {
+      mode: 'bounded',
+      size: 40,
+      dialColor: '#f0f0f0',
+      bezelColor: '#ddd',
+      indicatorColor: '#333',
+      indicatorWidth: 2,
+      showTicks: false,
+      showValueLabels: false,
+      labelColor: '#888'
+    };
+
+    // Colored encoder knobs (like OP-1's blue, green, white, orange)
+    const knobBlue = new Knob('#knob-blue', {
+      ...op1BaseStyle,
+      size: 36,
+      dialColor: '#3498db',
+      bezelColor: '#2980b9',
+      indicatorColor: '#fff',
+      min: 0, max: 100, value: 50
+    });
+
+    const knobGreen = new Knob('#knob-green', {
+      ...op1BaseStyle,
+      size: 36,
+      dialColor: '#7f8c8d',
+      bezelColor: '#6c7a7b',
+      indicatorColor: '#fff',
+      min: 0, max: 100, value: 30
+    });
+
+    const knobWhite = new Knob('#knob-white', {
+      ...op1BaseStyle,
+      size: 36,
+      dialColor: '#ecf0f1',
+      bezelColor: '#bdc3c7',
+      indicatorColor: '#333',
+      min: 0, max: 100, value: 70
+    });
+
+    const knobOrange = new Knob('#knob-orange', {
+      ...op1BaseStyle,
+      size: 36,
+      dialColor: '#e67e22',
+      bezelColor: '#d35400',
+      indicatorColor: '#fff',
+      min: 0, max: 100, value: 80
+    });
+
+    // Oscillator controls
+    const oscFreq = new Knob('#osc-freq', {
+      ...op1BaseStyle,
+      min: 20,
+      max: 2000,
+      value: 440,
+      step: 1,
+      label: 'Freq'
+    });
+
+    const oscShape = new Knob('#osc-shape', {
+      ...op1BaseStyle,
+      min: 0,
+      max: 3,
+      value: 0,
+      step: 1,
+      label: 'Wave'
+    });
+
+    // Filter controls
+    const filterCutoff = new Knob('#filter-cutoff', {
+      ...op1BaseStyle,
+      min: 20,
+      max: 20000,
+      value: 5000,
+      step: 10,
+      label: 'Cutoff'
+    });
+
+    const filterRes = new Knob('#filter-res', {
+      ...op1BaseStyle,
+      min: 0,
+      max: 100,
+      value: 20,
+      step: 1,
+      label: 'Res'
+    });
+
+    // Envelope controls
+    const envStyle = { ...op1BaseStyle, size: 32 };
+    const envAttack = new Knob('#env-attack', { ...envStyle, min: 0, max: 2000, value: 10, label: 'A' });
+    const envDecay = new Knob('#env-decay', { ...envStyle, min: 0, max: 2000, value: 200, label: 'D' });
+    const envSustain = new Knob('#env-sustain', { ...envStyle, min: 0, max: 100, value: 70, label: 'S' });
+    const envRelease = new Knob('#env-release', { ...envStyle, min: 0, max: 3000, value: 300, label: 'R' });
+
+    // Output controls
+    const outVolume = new Knob('#out-volume', {
+      ...op1BaseStyle,
+      min: 0,
+      max: 100,
+      value: 75,
+      label: 'Vol'
+    });
+
+    // Update frequency display
+    const freqDisplay = document.getElementById('freq-display');
+    function updateFreqDisplay() {
+      const freq = oscFreq.getValue();
+      freqDisplay.innerHTML = `${Math.round(freq)} <span>Hz</span>`;
+    }
+    oscFreq.onChange(updateFreqDisplay);
+
+    // Time display
+    let seconds = 0;
+    const timeDisplay = document.getElementById('time-display');
+    setInterval(() => {
+      seconds++;
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      timeDisplay.textContent = `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }, 1000);
+
+    // Waveform canvas
+    const canvas = document.getElementById('waveform');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = canvas.offsetWidth * 2;
+      canvas.height = canvas.offsetHeight * 2;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    // Waveform types
+    const waveTypes = ['sine', 'square', 'sawtooth', 'triangle'];
+    let currentWave = 0;
+
+    function drawWaveform() {
+      const width = canvas.width;
+      const height = canvas.height;
+      const centerY = height / 2;
+      const amplitude = height * 0.35;
+
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0, 0, width, height);
+
+      // Grid lines
+      ctx.strokeStyle = '#222';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, centerY);
+      ctx.lineTo(width, centerY);
+      ctx.stroke();
+
+      // Waveform
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+
+      const freq = oscFreq.getValue() / 440;
+      const cycles = 3 * Math.min(freq, 2);
+
+      for (let x = 0; x < width; x++) {
+        const t = (x / width) * cycles * Math.PI * 2;
+        let y;
+
+        switch (waveTypes[currentWave]) {
+          case 'sine':
+            y = Math.sin(t);
+            break;
+          case 'square':
+            y = Math.sign(Math.sin(t));
+            break;
+          case 'sawtooth':
+            y = 2 * ((t / (2 * Math.PI)) % 1) - 1;
+            break;
+          case 'triangle':
+            y = 2 * Math.abs(2 * ((t / (2 * Math.PI)) % 1) - 1) - 1;
+            break;
+        }
+
+        const py = centerY - y * amplitude;
+        if (x === 0) {
+          ctx.moveTo(x, py);
+        } else {
+          ctx.lineTo(x, py);
+        }
+      }
+
+      ctx.stroke();
+      requestAnimationFrame(drawWaveform);
+    }
+    drawWaveform();
+
+    // Wave button
+    const modeDisplay = document.getElementById('mode-display');
+    document.getElementById('wave-btn').addEventListener('click', () => {
+      currentWave = (currentWave + 1) % waveTypes.length;
+      oscShape.setValue(currentWave);
+      modeDisplay.textContent = waveTypes[currentWave];
+    });
+
+    oscShape.onChange((e) => {
+      currentWave = Math.round(e.value);
+      modeDisplay.textContent = waveTypes[currentWave];
+    });
+
+    // Octave buttons
+    let octaveShift = 0;
+    document.getElementById('oct-up').addEventListener('click', () => {
+      if (octaveShift < 2) {
+        octaveShift++;
+        oscFreq.setValue(oscFreq.getValue() * 2);
+      }
+    });
+    document.getElementById('oct-down').addEventListener('click', () => {
+      if (octaveShift > -2) {
+        octaveShift--;
+        oscFreq.setValue(oscFreq.getValue() / 2);
+      }
+    });
+
+    // Play button (visual only)
+    let isPlaying = false;
+    const playBtn = document.getElementById('play-btn');
+    playBtn.addEventListener('click', () => {
+      isPlaying = !isPlaying;
+      playBtn.classList.toggle('playing', isPlaying);
+    });
+
+    console.log('AK-47 Synth loaded!');
+  </script>
+</body>
+</html>

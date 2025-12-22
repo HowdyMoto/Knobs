@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knob Styles Gallery - Audio Knobs</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      padding: 30px 20px;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .back-link {
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 400;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .section {
+      margin-bottom: 60px;
+    }
+
+    .section h2 {
+      font-size: 1.4rem;
+      font-weight: 500;
+      margin: 0 0 10px 0;
+      color: #fff;
+    }
+
+    .section p {
+      color: #8b949e;
+      margin: 0 0 25px 0;
+    }
+
+    .gallery-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 30px;
+      border-radius: 12px;
+      align-items: flex-end;
+    }
+
+    /* Background themes */
+    .bg-dark {
+      background: #161b22;
+      border: 1px solid #30363d;
+    }
+
+    .bg-darker {
+      background: #0a0a0a;
+      border: 1px solid #222;
+    }
+
+    .bg-gradient-blue {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border: 1px solid #30363d;
+    }
+
+    .bg-gradient-purple {
+      background: linear-gradient(135deg, #2d1b4e 0%, #1a1a2e 100%);
+      border: 1px solid #3d2b5e;
+    }
+
+    .bg-wood {
+      background: linear-gradient(180deg, #3d2b1f 0%, #2a1f15 100%);
+      border: 1px solid #4a3728;
+    }
+
+    .bg-metal {
+      background: linear-gradient(180deg, #3a3a3a 0%, #252525 100%);
+      border: 1px solid #4a4a4a;
+    }
+
+    .bg-cream {
+      background: linear-gradient(180deg, #f5f0e6 0%, #e8e0d0 100%);
+      border: 1px solid #d4c9b8;
+    }
+
+    .bg-orange {
+      background: linear-gradient(180deg, #ff8c42 0%, #ff6b35 100%);
+      border: 1px solid #ff9955;
+    }
+
+    .bg-teal {
+      background: linear-gradient(180deg, #1a535c 0%, #0d3b42 100%);
+      border: 1px solid #2a6570;
+    }
+
+    .knob-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .knob-label {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #8b949e;
+      text-align: center;
+    }
+
+    .bg-cream .knob-label,
+    .bg-orange .knob-label {
+      color: #555;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #8b949e;
+      border-top: 1px solid #30363d;
+    }
+
+    footer a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="index.html" class="back-link">← Back to Examples</a>
+      <h1>Knob Styles Gallery</h1>
+      <div style="width: 120px;"></div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Default Styles -->
+    <section class="section">
+      <h2>Default Styles</h2>
+      <p>Standard knobs with different sizes and configurations.</p>
+      <div class="gallery-row bg-dark">
+        <div class="knob-item" id="default-small"></div>
+        <div class="knob-item" id="default-medium"></div>
+        <div class="knob-item" id="default-large"></div>
+        <div class="knob-item" id="default-xlarge"></div>
+      </div>
+    </section>
+
+    <!-- Vintage Amp Styles -->
+    <section class="section">
+      <h2>Vintage Amp</h2>
+      <p>Classic guitar amplifier styling with warm, dark tones.</p>
+      <div class="gallery-row bg-wood">
+        <div class="knob-item" id="amp-1"></div>
+        <div class="knob-item" id="amp-2"></div>
+        <div class="knob-item" id="amp-3"></div>
+        <div class="knob-item" id="amp-4"></div>
+        <div class="knob-item" id="amp-5"></div>
+      </div>
+    </section>
+
+    <!-- Modern Dark -->
+    <section class="section">
+      <h2>Modern Dark</h2>
+      <p>Sleek, modern aesthetics with colored accents.</p>
+      <div class="gallery-row bg-darker">
+        <div class="knob-item" id="modern-cyan"></div>
+        <div class="knob-item" id="modern-orange"></div>
+        <div class="knob-item" id="modern-pink"></div>
+        <div class="knob-item" id="modern-green"></div>
+        <div class="knob-item" id="modern-purple"></div>
+      </div>
+    </section>
+
+    <!-- Encoder / Infinite Styles -->
+    <section class="section">
+      <h2>Encoders (Infinite Rotation)</h2>
+      <p>Grip-bump style encoders for endless rotation controls.</p>
+      <div class="gallery-row bg-metal">
+        <div class="knob-item" id="encoder-1"></div>
+        <div class="knob-item" id="encoder-2"></div>
+        <div class="knob-item" id="encoder-3"></div>
+        <div class="knob-item" id="encoder-4"></div>
+      </div>
+    </section>
+
+    <!-- Hi-Fi / Braun Style -->
+    <section class="section">
+      <h2>Hi-Fi / Braun Style</h2>
+      <p>Minimalist design inspired by Dieter Rams and classic hi-fi equipment.</p>
+      <div class="gallery-row bg-cream">
+        <div class="knob-item" id="hifi-1"></div>
+        <div class="knob-item" id="hifi-2"></div>
+        <div class="knob-item" id="hifi-3"></div>
+        <div class="knob-item" id="hifi-4"></div>
+      </div>
+    </section>
+
+    <!-- Colorful / Playful -->
+    <section class="section">
+      <h2>Colorful & Playful</h2>
+      <p>Bright, fun colors for creative applications.</p>
+      <div class="gallery-row bg-gradient-purple">
+        <div class="knob-item" id="color-1"></div>
+        <div class="knob-item" id="color-2"></div>
+        <div class="knob-item" id="color-3"></div>
+        <div class="knob-item" id="color-4"></div>
+        <div class="knob-item" id="color-5"></div>
+      </div>
+    </section>
+
+    <!-- Value Display Styles -->
+    <section class="section">
+      <h2>With Value Display</h2>
+      <p>Knobs with real-time numeric value readouts.</p>
+      <div class="gallery-row bg-gradient-blue">
+        <div class="knob-item" id="display-1"></div>
+        <div class="knob-item" id="display-2"></div>
+        <div class="knob-item" id="display-3"></div>
+      </div>
+    </section>
+
+    <!-- Spinal Tap -->
+    <section class="section">
+      <h2>Spinal Tap</h2>
+      <p>These go to 11!</p>
+      <div class="gallery-row bg-darker">
+        <div class="knob-item" id="spinal-1"></div>
+        <div class="knob-item" id="spinal-2"></div>
+        <div class="knob-item" id="spinal-3"></div>
+      </div>
+    </section>
+
+    <!-- Teal & Orange (Complementary) -->
+    <section class="section">
+      <h2>Teal & Orange Theme</h2>
+      <p>Complementary color scheme for visual impact.</p>
+      <div class="gallery-row bg-teal">
+        <div class="knob-item" id="teal-1"></div>
+        <div class="knob-item" id="teal-2"></div>
+        <div class="knob-item" id="teal-3"></div>
+        <div class="knob-item" id="teal-4"></div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <a href="index.html">← Back to Examples</a>
+  </footer>
+
+  <script type="module">
+    import {
+      Knob,
+      createVolumeKnob,
+      createSpinalTapKnob,
+      createInfiniteKnob,
+      createPanKnob
+    } from '../dist/knobs.esm.js';
+
+    // Default Styles
+    new Knob('#default-small', { mode: 'bounded', min: 0, max: 10, value: 3, size: 50, label: 'Small' });
+    new Knob('#default-medium', { mode: 'bounded', min: 0, max: 10, value: 5, size: 70, label: 'Medium' });
+    new Knob('#default-large', { mode: 'bounded', min: 0, max: 10, value: 7, size: 90, label: 'Large' });
+    new Knob('#default-xlarge', { mode: 'bounded', min: 0, max: 10, value: 8, size: 110, label: 'X-Large' });
+
+    // Vintage Amp Styles
+    const ampStyle = {
+      mode: 'bounded',
+      min: 0,
+      max: 10,
+      size: 60,
+      dialColor: '#1a1510',
+      bezelColor: '#8b7355',
+      indicatorColor: '#d4c4a8',
+      tickColor: '#a08060',
+      labelColor: '#d4c4a8'
+    };
+    new Knob('#amp-1', { ...ampStyle, value: 3, label: 'Gain' });
+    new Knob('#amp-2', { ...ampStyle, value: 5, label: 'Bass' });
+    new Knob('#amp-3', { ...ampStyle, value: 6, label: 'Mid' });
+    new Knob('#amp-4', { ...ampStyle, value: 4, label: 'Treble' });
+    new Knob('#amp-5', { ...ampStyle, value: 7, label: 'Volume' });
+
+    // Modern Dark with colored accents
+    const modernBase = {
+      mode: 'bounded',
+      min: 0,
+      max: 100,
+      size: 70,
+      dialColor: '#111111',
+      bezelColor: '#333333',
+      tickColor: '#444444'
+    };
+    new Knob('#modern-cyan', { ...modernBase, value: 60, indicatorColor: '#00d4ff', labelColor: '#00d4ff', label: 'Cyan' });
+    new Knob('#modern-orange', { ...modernBase, value: 45, indicatorColor: '#ff6b35', labelColor: '#ff6b35', label: 'Orange' });
+    new Knob('#modern-pink', { ...modernBase, value: 75, indicatorColor: '#ff69b4', labelColor: '#ff69b4', label: 'Pink' });
+    new Knob('#modern-green', { ...modernBase, value: 30, indicatorColor: '#00ff88', labelColor: '#00ff88', label: 'Green' });
+    new Knob('#modern-purple', { ...modernBase, value: 55, indicatorColor: '#9966ff', labelColor: '#9966ff', label: 'Purple' });
+
+    // Encoders
+    const encoderBase = {
+      mode: 'infinite',
+      size: 80,
+      gripBumps: true,
+      showTicks: false,
+      showValueLabels: false
+    };
+    new Knob('#encoder-1', { ...encoderBase, dialColor: '#2a2a2a', bezelColor: '#444', label: 'Dark', labelColor: '#888' });
+    new Knob('#encoder-2', { ...encoderBase, dialColor: '#3a3a3a', bezelColor: '#555', gripBumpCount: 24, label: 'Fine', labelColor: '#888' });
+    new Knob('#encoder-3', { ...encoderBase, dialColor: '#1a1a1a', bezelColor: '#333', gripBumpCount: 16, label: 'Coarse', labelColor: '#888' });
+    new Knob('#encoder-4', { ...encoderBase, dialColor: '#4a4a4a', bezelColor: '#666', gripBumpCount: 32, label: 'Precise', labelColor: '#888' });
+
+    // Hi-Fi / Braun Style
+    const hifiStyle = {
+      mode: 'bounded',
+      min: 0,
+      max: 10,
+      size: 75,
+      dialColor: '#e8e8e8',
+      bezelColor: '#cccccc',
+      indicatorColor: '#cc4444',
+      indicatorWidth: 4,
+      tickColor: '#999999',
+      labelColor: '#444444'
+    };
+    new Knob('#hifi-1', { ...hifiStyle, value: 4, label: 'Volume' });
+    new Knob('#hifi-2', { ...hifiStyle, value: 6, label: 'Bass' });
+    new Knob('#hifi-3', { ...hifiStyle, value: 5, label: 'Treble' });
+    new Knob('#hifi-4', { ...hifiStyle, value: 7, label: 'Balance', indicatorColor: '#4444cc' });
+
+    // Colorful
+    new Knob('#color-1', {
+      mode: 'bounded', min: 0, max: 10, value: 5, size: 65,
+      dialColor: '#ff6b6b', bezelColor: '#ff8888', indicatorColor: '#fff',
+      tickColor: '#ffaaaa', labelColor: '#fff', label: 'Red'
+    });
+    new Knob('#color-2', {
+      mode: 'bounded', min: 0, max: 10, value: 7, size: 65,
+      dialColor: '#4ecdc4', bezelColor: '#6ee0d8', indicatorColor: '#fff',
+      tickColor: '#88ebe4', labelColor: '#fff', label: 'Teal'
+    });
+    new Knob('#color-3', {
+      mode: 'bounded', min: 0, max: 10, value: 3, size: 65,
+      dialColor: '#ffe66d', bezelColor: '#ffec8a', indicatorColor: '#333',
+      tickColor: '#fff5b8', labelColor: '#fff', label: 'Yellow'
+    });
+    new Knob('#color-4', {
+      mode: 'bounded', min: 0, max: 10, value: 8, size: 65,
+      dialColor: '#95e1d3', bezelColor: '#aaeadf', indicatorColor: '#333',
+      tickColor: '#c5f2ea', labelColor: '#fff', label: 'Mint'
+    });
+    new Knob('#color-5', {
+      mode: 'bounded', min: 0, max: 10, value: 6, size: 65,
+      dialColor: '#dda0dd', bezelColor: '#e8b8e8', indicatorColor: '#fff',
+      tickColor: '#f0d0f0', labelColor: '#fff', label: 'Plum'
+    });
+
+    // Value Display
+    new Knob('#display-1', {
+      mode: 'bounded', min: 0, max: 100, value: 42, size: 80,
+      label: 'Cutoff', showValueDisplay: true, valueDisplayColor: '#4ecdc4',
+      dialColor: '#222', indicatorColor: '#4ecdc4', tickColor: '#555', labelColor: '#aaa'
+    });
+    new Knob('#display-2', {
+      mode: 'bounded', min: 0, max: 100, value: 75, size: 80,
+      label: 'Resonance', showValueDisplay: true, valueDisplayColor: '#ff6b6b',
+      dialColor: '#222', indicatorColor: '#ff6b6b', tickColor: '#555', labelColor: '#aaa'
+    });
+    new Knob('#display-3', {
+      mode: 'bounded', min: -50, max: 50, value: 0, size: 80,
+      label: 'Detune', showValueDisplay: true, valueDisplayColor: '#ffe66d',
+      dialColor: '#222', indicatorColor: '#ffe66d', tickColor: '#555', labelColor: '#aaa'
+    });
+
+    // Spinal Tap
+    const spinalStyle = {
+      size: 75,
+      dialColor: '#0a0a0a',
+      bezelColor: '#222',
+      indicatorColor: '#fff',
+      tickColor: '#666',
+      labelColor: '#aaa'
+    };
+    createSpinalTapKnob('#spinal-1', { ...spinalStyle, value: 11, label: 'Volume' });
+    createSpinalTapKnob('#spinal-2', { ...spinalStyle, value: 8, label: 'Gain' });
+    createSpinalTapKnob('#spinal-3', { ...spinalStyle, value: 11, label: 'Loudness' });
+
+    // Teal & Orange
+    new Knob('#teal-1', {
+      mode: 'bounded', min: 0, max: 10, value: 6, size: 70,
+      dialColor: '#0d3b42', bezelColor: '#1a535c', indicatorColor: '#ff6b35',
+      tickColor: '#ff8c55', labelColor: '#fff', label: 'Attack'
+    });
+    new Knob('#teal-2', {
+      mode: 'bounded', min: 0, max: 10, value: 4, size: 70,
+      dialColor: '#0d3b42', bezelColor: '#1a535c', indicatorColor: '#ff6b35',
+      tickColor: '#ff8c55', labelColor: '#fff', label: 'Decay'
+    });
+    new Knob('#teal-3', {
+      mode: 'bounded', min: 0, max: 10, value: 7, size: 70,
+      dialColor: '#0d3b42', bezelColor: '#1a535c', indicatorColor: '#ff6b35',
+      tickColor: '#ff8c55', labelColor: '#fff', label: 'Sustain'
+    });
+    new Knob('#teal-4', {
+      mode: 'bounded', min: 0, max: 10, value: 3, size: 70,
+      dialColor: '#0d3b42', bezelColor: '#1a535c', indicatorColor: '#ff6b35',
+      tickColor: '#ff8c55', labelColor: '#fff', label: 'Release'
+    });
+
+    console.log('Knobs gallery loaded!');
+  </script>
+</body>
+</html>

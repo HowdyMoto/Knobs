@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Documentation - Audio Knobs</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #2d333b 0%, #22272e 100%);
+      padding: 30px 20px;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .header-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .back-link {
+      color: #58a6ff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 400;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .intro {
+      margin-bottom: 40px;
+      padding: 25px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+    }
+
+    .intro h2 {
+      margin: 0 0 10px 0;
+      color: #fff;
+    }
+
+    .intro p {
+      margin: 0;
+      color: #8b949e;
+    }
+
+    .section {
+      margin-bottom: 50px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .section h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: #fff;
+    }
+
+    .section-badge {
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      background: rgba(88, 166, 255, 0.15);
+      color: #58a6ff;
+    }
+
+    .demo-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+
+    .demo-preview {
+      padding: 30px;
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      background: #1a1a2e;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .demo-preview.dark {
+      background: #0a0a0a;
+    }
+
+    .demo-preview.gradient {
+      background: linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%);
+    }
+
+    .demo-info {
+      padding: 20px;
+    }
+
+    .demo-info h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.1rem;
+      color: #fff;
+    }
+
+    .demo-info p {
+      margin: 0 0 15px 0;
+      color: #8b949e;
+      font-size: 0.95rem;
+    }
+
+    .code-block {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 15px;
+      overflow-x: auto;
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .code-block code {
+      color: #c9d1d9;
+      white-space: pre;
+    }
+
+    .code-keyword { color: #ff7b72; }
+    .code-string { color: #a5d6ff; }
+    .code-number { color: #79c0ff; }
+    .code-property { color: #d2a8ff; }
+    .code-comment { color: #8b949e; }
+
+    .value-display {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      font-family: 'SF Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    .value-display span {
+      color: #7ee787;
+    }
+
+    .control-label {
+      text-align: center;
+      font-size: 11px;
+      color: #8b949e;
+      margin-top: 8px;
+    }
+
+    .control-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Button styles */
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      background: #21262d;
+      color: #c9d1d9;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .btn:hover {
+      background: #30363d;
+      border-color: #8b949e;
+    }
+
+    .btn.primary {
+      background: #238636;
+      border-color: #238636;
+    }
+
+    .btn.primary:hover {
+      background: #2ea043;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #8b949e;
+      border-top: 1px solid #30363d;
+    }
+
+    footer a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+
+    @media (max-width: 600px) {
+      .demo-preview {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="index.html" class="back-link">← Back to Examples</a>
+      <h1>API Documentation</h1>
+      <div style="width: 120px;"></div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="intro">
+      <h2>Interactive API Reference</h2>
+      <p>Explore the Audio Knobs API with live demos. Each example shows working code that you can use directly in your projects.</p>
+    </div>
+
+    <!-- Basic Usage -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Basic Usage</h2>
+        <span class="section-badge">Getting Started</span>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-preview">
+          <div class="control-wrapper">
+            <div id="basic-knob"></div>
+            <div class="control-label">Knob</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="basic-slider"></div>
+            <div class="control-label">Slider</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Creating Controls</h3>
+          <p>Create knobs and sliders with minimal configuration. Just specify a container and optional settings.</p>
+          <div class="code-block"><code><span class="code-keyword">import</span> { Knob, Slider } <span class="code-keyword">from</span> <span class="code-string">'audio-knobs'</span>;
+
+<span class="code-comment">// Create a knob</span>
+<span class="code-keyword">const</span> knob = <span class="code-keyword">new</span> Knob(<span class="code-string">'#my-knob'</span>, {
+  <span class="code-property">min</span>: <span class="code-number">0</span>,
+  <span class="code-property">max</span>: <span class="code-number">100</span>,
+  <span class="code-property">value</span>: <span class="code-number">50</span>
+});
+
+<span class="code-comment">// Create a slider</span>
+<span class="code-keyword">const</span> slider = <span class="code-keyword">new</span> Slider(<span class="code-string">'#my-slider'</span>, {
+  <span class="code-property">min</span>: <span class="code-number">0</span>,
+  <span class="code-property">max</span>: <span class="code-number">10</span>,
+  <span class="code-property">value</span>: <span class="code-number">5</span>
+});</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Knob Modes -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Knob Modes</h2>
+        <span class="section-badge">Knob</span>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-preview dark">
+          <div class="control-wrapper">
+            <div id="mode-bounded"></div>
+            <div class="control-label">Bounded (default)</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="mode-endless"></div>
+            <div class="control-label">Endless</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Bounded vs Endless</h3>
+          <p><strong>Bounded</strong> knobs have hard stops at min/max values. <strong>Endless</strong> knobs rotate continuously (like encoders) and wrap around.</p>
+          <div class="code-block"><code><span class="code-comment">// Bounded (has min/max stops)</span>
+<span class="code-keyword">new</span> Knob(<span class="code-string">'#bounded'</span>, {
+  <span class="code-property">mode</span>: <span class="code-string">'bounded'</span>,
+  <span class="code-property">min</span>: <span class="code-number">0</span>,
+  <span class="code-property">max</span>: <span class="code-number">11</span>
+});
+
+<span class="code-comment">// Endless (wraps around)</span>
+<span class="code-keyword">new</span> Knob(<span class="code-string">'#endless'</span>, {
+  <span class="code-property">mode</span>: <span class="code-string">'endless'</span>,
+  <span class="code-property">min</span>: <span class="code-number">0</span>,
+  <span class="code-property">max</span>: <span class="code-number">100</span>
+});</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Event Handling -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Event Handling</h2>
+        <span class="section-badge">Events</span>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-preview gradient">
+          <div class="control-wrapper">
+            <div id="event-knob"></div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Responding to Changes</h3>
+          <p>Use the <code>onChange</code> callback to respond to user input. The callback receives the current value.</p>
+          <div class="value-display" id="event-value">Value: <span>50</span></div>
+          <div class="code-block"><code><span class="code-keyword">const</span> knob = <span class="code-keyword">new</span> Knob(<span class="code-string">'#knob'</span>, {
+  <span class="code-property">value</span>: <span class="code-number">50</span>
+});
+
+knob.<span class="code-property">onChange</span>((event) => {
+  console.<span class="code-property">log</span>(<span class="code-string">'Value:'</span>, event.<span class="code-property">value</span>);
+  console.<span class="code-property">log</span>(<span class="code-string">'Normalized:'</span>, event.<span class="code-property">normalizedValue</span>);
+});</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Programmatic Control -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Programmatic Control</h2>
+        <span class="section-badge">Methods</span>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-preview">
+          <div class="control-wrapper">
+            <div id="program-knob"></div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Getting & Setting Values</h3>
+          <p>Use methods to control knobs programmatically from your code.</p>
+          <div class="btn-row">
+            <button class="btn" id="btn-min">Set Min</button>
+            <button class="btn" id="btn-mid">Set 50%</button>
+            <button class="btn" id="btn-max">Set Max</button>
+            <button class="btn primary" id="btn-random">Random</button>
+          </div>
+          <div class="value-display" id="program-value">Current value: <span>50</span></div>
+          <div class="code-block"><code><span class="code-comment">// Get the current value</span>
+<span class="code-keyword">const</span> value = knob.<span class="code-property">getValue</span>();
+
+<span class="code-comment">// Set a new value</span>
+knob.<span class="code-property">setValue</span>(<span class="code-number">75</span>);
+
+<span class="code-comment">// Get normalized value (0-1)</span>
+<span class="code-keyword">const</span> normalized = knob.<span class="code-property">getNormalizedValue</span>();</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Styling -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Styling Options</h2>
+        <span class="section-badge">Customization</span>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-preview dark">
+          <div class="control-wrapper">
+            <div id="style-default"></div>
+            <div class="control-label">Default</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="style-vintage"></div>
+            <div class="control-label">Vintage</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="style-modern"></div>
+            <div class="control-label">Modern</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="style-minimal"></div>
+            <div class="control-label">Minimal</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Custom Colors & Appearance</h3>
+          <p>Customize every visual aspect including colors, sizes, and tick marks.</p>
+          <div class="code-block"><code><span class="code-keyword">new</span> Knob(<span class="code-string">'#knob'</span>, {
+  <span class="code-property">size</span>: <span class="code-number">70</span>,
+  <span class="code-property">dialColor</span>: <span class="code-string">'#8b4513'</span>,
+  <span class="code-property">bezelColor</span>: <span class="code-string">'#5a3510'</span>,
+  <span class="code-property">indicatorColor</span>: <span class="code-string">'#f5deb3'</span>,
+  <span class="code-property">tickColor</span>: <span class="code-string">'#daa520'</span>,
+  <span class="code-property">labelColor</span>: <span class="code-string">'#f5deb3'</span>,
+  <span class="code-property">tickCount</span>: <span class="code-number">11</span>,
+  <span class="code-property">showTicks</span>: <span class="code-keyword">true</span>
+});</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Factory Functions -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Factory Functions</h2>
+        <span class="section-badge">Helpers</span>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-preview">
+          <div class="control-wrapper">
+            <div id="factory-pan"></div>
+            <div class="control-label">Pan Knob</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="factory-mute"></div>
+            <div class="control-label">Mute Fader</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Pre-configured Controls</h3>
+          <p>Use factory functions for common control types with sensible defaults.</p>
+          <div class="code-block"><code><span class="code-keyword">import</span> { createPanKnob, createMuteFader } <span class="code-keyword">from</span> <span class="code-string">'audio-knobs'</span>;
+
+<span class="code-comment">// Pan knob: -100 (L) to +100 (R), centered at 0</span>
+<span class="code-keyword">const</span> pan = createPanKnob(<span class="code-string">'#pan'</span>, {
+  <span class="code-property">label</span>: <span class="code-string">'Pan'</span>
+});
+
+<span class="code-comment">// Mute fader: slider with mute toggle button</span>
+<span class="code-keyword">const</span> fader = createMuteFader(<span class="code-string">'#fader'</span>, {
+  <span class="code-property">label</span>: <span class="code-string">'Volume'</span>,
+  <span class="code-property">toggleLabel</span>: <span class="code-string">'Mute'</span>
+});</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slider Options -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Slider Configuration</h2>
+        <span class="section-badge">Slider</span>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-preview gradient">
+          <div class="control-wrapper">
+            <div id="slider-basic"></div>
+            <div class="control-label">Basic</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="slider-display"></div>
+            <div class="control-label">With Display</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="slider-custom"></div>
+            <div class="control-label">Custom Labels</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Slider Options</h3>
+          <p>Sliders support value displays, custom labels, and various styling options.</p>
+          <div class="code-block"><code><span class="code-keyword">new</span> Slider(<span class="code-string">'#slider'</span>, {
+  <span class="code-property">min</span>: <span class="code-number">-24</span>,
+  <span class="code-property">max</span>: <span class="code-number">12</span>,
+  <span class="code-property">value</span>: <span class="code-number">0</span>,
+  <span class="code-property">length</span>: <span class="code-number">150</span>,
+  <span class="code-property">label</span>: <span class="code-string">'Gain'</span>,
+  <span class="code-property">showValueDisplay</span>: <span class="code-keyword">true</span>,
+  <span class="code-property">tickCount</span>: <span class="code-number">7</span>,
+  <span class="code-property">valueLabels</span>: [
+    <span class="code-string">'-24'</span>,
+    <span class="code-string">'-12'</span>,
+    <span class="code-string">'0'</span>,
+    <span class="code-string">'+12'</span>
+  ]
+});</code></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <a href="index.html">← Back to Examples</a>
+  </footer>
+
+  <script type="module">
+    import { Knob, Slider, createPanKnob, createMuteFader } from '../dist/knobs.esm.js';
+
+    // Basic Usage
+    new Knob('#basic-knob', { min: 0, max: 100, value: 50, size: 60, label: 'Volume' });
+    new Slider('#basic-slider', { min: 0, max: 10, value: 5, length: 120, label: 'Level' });
+
+    // Knob Modes
+    new Knob('#mode-bounded', {
+      mode: 'bounded',
+      min: 0,
+      max: 11,
+      value: 5,
+      size: 60,
+      tickCount: 12
+    });
+    new Knob('#mode-endless', {
+      mode: 'endless',
+      min: 0,
+      max: 100,
+      value: 0,
+      size: 60,
+      dialColor: '#4ecdc4',
+      bezelColor: '#3aa89c'
+    });
+
+    // Event Handling
+    const eventKnob = new Knob('#event-knob', {
+      min: 0,
+      max: 100,
+      value: 50,
+      size: 80,
+      dialColor: '#ff6b6b',
+      bezelColor: '#cc4444'
+    });
+    const eventValue = document.querySelector('#event-value span');
+    eventKnob.onChange((e) => {
+      eventValue.textContent = Math.round(e.value);
+    });
+
+    // Programmatic Control
+    const programKnob = new Knob('#program-knob', {
+      min: 0,
+      max: 100,
+      value: 50,
+      size: 80
+    });
+    const programValue = document.querySelector('#program-value span');
+    programKnob.onChange((e) => {
+      programValue.textContent = Math.round(e.value);
+    });
+
+    document.getElementById('btn-min').addEventListener('click', () => programKnob.setValue(0));
+    document.getElementById('btn-mid').addEventListener('click', () => programKnob.setValue(50));
+    document.getElementById('btn-max').addEventListener('click', () => programKnob.setValue(100));
+    document.getElementById('btn-random').addEventListener('click', () => programKnob.setValue(Math.random() * 100));
+
+    // Styling
+    new Knob('#style-default', { min: 0, max: 10, value: 5, size: 55 });
+    new Knob('#style-vintage', {
+      min: 0, max: 10, value: 7, size: 55,
+      dialColor: '#8b4513',
+      bezelColor: '#5a3510',
+      indicatorColor: '#f5deb3',
+      tickColor: '#daa520',
+      tickCount: 11
+    });
+    new Knob('#style-modern', {
+      min: 0, max: 10, value: 3, size: 55,
+      dialColor: '#1a1a1a',
+      bezelColor: '#333',
+      indicatorColor: '#00ff88',
+      tickColor: '#00ff88',
+      tickCount: 11
+    });
+    new Knob('#style-minimal', {
+      min: 0, max: 10, value: 6, size: 55,
+      dialColor: '#666',
+      bezelColor: '#444',
+      indicatorColor: '#fff',
+      showTicks: false
+    });
+
+    // Factory Functions
+    createPanKnob('#factory-pan', { size: 55 });
+    createMuteFader('#factory-mute', { length: 120, value: 7 });
+
+    // Slider Options
+    new Slider('#slider-basic', {
+      min: 0, max: 10, value: 5, length: 130, label: 'Vol'
+    });
+    new Slider('#slider-display', {
+      min: 0, max: 100, value: 42, length: 130, label: 'Mix',
+      showValueDisplay: true,
+      thumbColor: '#4ecdc4'
+    });
+    new Slider('#slider-custom', {
+      min: -24, max: 12, value: 0, length: 130, label: 'Gain',
+      tickCount: 5,
+      valueLabels: ['-24', '-12', '0', '6', '12'],
+      thumbColor: '#ff6b6b'
+    });
+
+    console.log('API Demo loaded!');
+  </script>
+</body>
+</html>
