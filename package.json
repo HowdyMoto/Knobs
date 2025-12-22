@@ -1,6 +1,6 @@
 {
   "name": "audio-knobs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Rotatable knob and slider controls for audio/music web apps - like guitar amps and vintage stereos",
   "main": "dist/knobs.js",
   "module": "dist/knobs.esm.js",
