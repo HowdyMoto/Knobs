@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Example - Audio Knobs</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #8957e5 0%, #6e40c9 100%);
+      padding: 30px 20px;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .header-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .back-link {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .back-link:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .intro {
+      margin-bottom: 40px;
+      padding: 25px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+    }
+
+    .intro h2 {
+      margin: 0 0 10px 0;
+      color: #fff;
+    }
+
+    .intro p {
+      margin: 0;
+      color: #8b949e;
+    }
+
+    .section {
+      margin-bottom: 50px;
+    }
+
+    .section h2 {
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #fff;
+      margin: 0 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .demo-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+
+    .demo-preview {
+      padding: 30px;
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-bottom: 1px solid #30363d;
+    }
+
+    .demo-info {
+      padding: 20px;
+    }
+
+    .demo-info h3 {
+      margin: 0 0 15px 0;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .code-block {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 15px;
+      overflow-x: auto;
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      white-space: pre;
+      margin-bottom: 15px;
+    }
+
+    .code-block:last-child {
+      margin-bottom: 0;
+    }
+
+    .code-block code {
+      color: #c9d1d9;
+    }
+
+    .code-keyword { color: #ff7b72; }
+    .code-string { color: #a5d6ff; }
+    .code-number { color: #79c0ff; }
+    .code-property { color: #d2a8ff; }
+    .code-comment { color: #8b949e; }
+    .code-tag { color: #7ee787; }
+
+    .control-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .control-label {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #8b949e;
+    }
+
+    .value-display {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      font-family: 'SF Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    .value-display span {
+      color: #7ee787;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      background: #21262d;
+      color: #c9d1d9;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn:hover {
+      background: #30363d;
+    }
+
+    .btn.primary {
+      background: #238636;
+      border-color: #238636;
+    }
+
+    .btn.primary:hover {
+      background: #2ea043;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #8b949e;
+      border-top: 1px solid #30363d;
+    }
+
+    footer a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="index.html" class="back-link">← Back to Examples</a>
+      <h1>JavaScript Example</h1>
+      <div style="width: 120px;"></div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="intro">
+      <h2>JavaScript API Usage</h2>
+      <p>Create and control knobs programmatically with full access to the JavaScript API. Best for dynamic applications and complex interactions.</p>
+    </div>
+
+    <!-- Basic Creation -->
+    <section class="section">
+      <h2>Creating Controls</h2>
+      <div class="demo-card">
+        <div class="demo-preview">
+          <div class="control-wrapper">
+            <div id="basic-knob"></div>
+            <div class="control-label">Knob</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="basic-slider"></div>
+            <div class="control-label">Slider</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Basic Usage</h3>
+          <div class="code-block"><code><span class="code-comment">// ES Module import</span>
+<span class="code-keyword">import</span> { Knob, Slider } <span class="code-keyword">from</span> <span class="code-string">'audio-knobs'</span>;
+
+<span class="code-comment">// Create a knob</span>
+<span class="code-keyword">const</span> knob = <span class="code-keyword">new</span> Knob(<span class="code-string">'#my-knob'</span>, {
+  min: <span class="code-number">0</span>,
+  max: <span class="code-number">100</span>,
+  value: <span class="code-number">50</span>,
+  label: <span class="code-string">'Volume'</span>
+});
+
+<span class="code-comment">// Create a slider</span>
+<span class="code-keyword">const</span> slider = <span class="code-keyword">new</span> Slider(<span class="code-string">'#my-slider'</span>, {
+  min: <span class="code-number">0</span>,
+  max: <span class="code-number">10</span>,
+  value: <span class="code-number">5</span>,
+  label: <span class="code-string">'Level'</span>
+});
+</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Event Handling -->
+    <section class="section">
+      <h2>Event Handling</h2>
+      <div class="demo-card">
+        <div class="demo-preview" style="background: linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%);">
+          <div class="control-wrapper">
+            <div id="event-knob"></div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Responding to Changes</h3>
+          <div class="value-display">Value: <span id="event-value">50</span></div>
+          <div class="code-block"><code><span class="code-keyword">const</span> knob = <span class="code-keyword">new</span> Knob(<span class="code-string">'#knob'</span>, {
+  min: <span class="code-number">0</span>,
+  max: <span class="code-number">100</span>,
+  value: <span class="code-number">50</span>
+});
+
+<span class="code-comment">// Listen for changes</span>
+knob.onChange(<span class="code-keyword">function</span>(event) {
+  console.log(<span class="code-string">'Value:'</span>, event.value);
+  console.log(<span class="code-string">'Previous:'</span>, event.previousValue);
+  console.log(<span class="code-string">'Angle:'</span>, event.angle);
+});
+
+<span class="code-comment">// Remove listener</span>
+knob.off(<span class="code-string">'change'</span>, myCallback);
+</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Programmatic Control -->
+    <section class="section">
+      <h2>Programmatic Control</h2>
+      <div class="demo-card">
+        <div class="demo-preview">
+          <div class="control-wrapper">
+            <div id="program-knob"></div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Getting & Setting Values</h3>
+          <div class="btn-row">
+            <button class="btn" id="btn-min">Set 0</button>
+            <button class="btn" id="btn-mid">Set 50</button>
+            <button class="btn" id="btn-max">Set 100</button>
+            <button class="btn primary" id="btn-random">Random</button>
+          </div>
+          <div class="value-display">Current: <span id="program-value">50</span></div>
+          <div class="code-block"><code><span class="code-comment">// Get current value</span>
+<span class="code-keyword">const</span> value = knob.getValue();
+
+<span class="code-comment">// Set value programmatically</span>
+knob.setValue(<span class="code-number">75</span>);
+
+<span class="code-comment">// Get the DOM element</span>
+<span class="code-keyword">const</span> element = knob.getElement();
+
+<span class="code-comment">// Clean up when done</span>
+knob.destroy();
+</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Styling Options -->
+    <section class="section">
+      <h2>Styling Options</h2>
+      <div class="demo-card">
+        <div class="demo-preview" style="background: #0a0a0a;">
+          <div class="control-wrapper">
+            <div id="style-vintage"></div>
+            <div class="control-label">Vintage</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="style-modern"></div>
+            <div class="control-label">Modern</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="style-neon"></div>
+            <div class="control-label">Neon</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="style-minimal"></div>
+            <div class="control-label">Minimal</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Custom Appearance</h3>
+          <div class="code-block"><code><span class="code-comment">// Vintage brown style</span>
+<span class="code-keyword">new</span> Knob(<span class="code-string">'#vintage'</span>, {
+  size: <span class="code-number">65</span>,
+  dialColor: <span class="code-string">'#8b4513'</span>,
+  indicatorColor: <span class="code-string">'#f5deb3'</span>,
+  tickColor: <span class="code-string">'#daa520'</span>,
+  tickCount: <span class="code-number">11</span>
+});
+
+<span class="code-comment">// Modern dark style</span>
+<span class="code-keyword">new</span> Knob(<span class="code-string">'#modern'</span>, {
+  dialColor: <span class="code-string">'#1a1a1a'</span>,
+  indicatorColor: <span class="code-string">'#00ff88'</span>,
+  tickColor: <span class="code-string">'#00ff88'</span>,
+  showValueDisplay: <span class="code-keyword">true</span>
+});
+
+<span class="code-comment">// Minimal (no ticks)</span>
+<span class="code-keyword">new</span> Knob(<span class="code-string">'#minimal'</span>, {
+  dialColor: <span class="code-string">'#444'</span>,
+  indicatorColor: <span class="code-string">'#fff'</span>,
+  showTicks: <span class="code-keyword">false</span>
+});
+</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Factory Functions -->
+    <section class="section">
+      <h2>Factory Functions</h2>
+      <div class="demo-card">
+        <div class="demo-preview">
+          <div class="control-wrapper">
+            <div id="factory-volume"></div>
+            <div class="control-label">Volume</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="factory-pan"></div>
+            <div class="control-label">Pan</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="factory-spinal"></div>
+            <div class="control-label">Spinal Tap</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="factory-mute"></div>
+            <div class="control-label">Mute Fader</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Pre-configured Controls</h3>
+          <div class="code-block"><code><span class="code-keyword">import</span> {
+  createVolumeKnob,
+  createPanKnob,
+  createSpinalTapKnob,
+  createMuteFader
+} <span class="code-keyword">from</span> <span class="code-string">'audio-knobs'</span>;
+
+<span class="code-comment">// Standard volume knob (0-10)</span>
+<span class="code-keyword">const</span> vol = createVolumeKnob(<span class="code-string">'#volume'</span>);
+
+<span class="code-comment">// Pan knob (-100 L to +100 R)</span>
+<span class="code-keyword">const</span> pan = createPanKnob(<span class="code-string">'#pan'</span>);
+
+<span class="code-comment">// "Goes to 11" knob</span>
+<span class="code-keyword">const</span> loud = createSpinalTapKnob(<span class="code-string">'#spinal'</span>);
+
+<span class="code-comment">// Fader with mute toggle</span>
+<span class="code-keyword">const</span> fader = createMuteFader(<span class="code-string">'#fader'</span>);
+</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slider Options -->
+    <section class="section">
+      <h2>Slider Configuration</h2>
+      <div class="demo-card">
+        <div class="demo-preview" style="background: linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%);">
+          <div class="control-wrapper">
+            <div id="slider-basic"></div>
+            <div class="control-label">Basic</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="slider-display"></div>
+            <div class="control-label">Display</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="slider-labels"></div>
+            <div class="control-label">Labels</div>
+          </div>
+          <div class="control-wrapper">
+            <div id="slider-toggle"></div>
+            <div class="control-label">Toggle</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Slider Options</h3>
+          <div class="code-block"><code><span class="code-comment">// Basic slider</span>
+<span class="code-keyword">new</span> Slider(<span class="code-string">'#basic'</span>, {
+  min: <span class="code-number">0</span>,
+  max: <span class="code-number">10</span>,
+  value: <span class="code-number">7</span>,
+  length: <span class="code-number">140</span>,
+  label: <span class="code-string">'Vol'</span>
+});
+
+<span class="code-comment">// With value display</span>
+<span class="code-keyword">new</span> Slider(<span class="code-string">'#display'</span>, {
+  showValueDisplay: <span class="code-keyword">true</span>,
+  thumbColor: <span class="code-string">'#4ecdc4'</span>
+});
+
+<span class="code-comment">// Custom tick labels</span>
+<span class="code-keyword">new</span> Slider(<span class="code-string">'#labels'</span>, {
+  min: <span class="code-number">-24</span>,
+  max: <span class="code-number">12</span>,
+  tickCount: <span class="code-number">5</span>,
+  valueLabels: [<span class="code-string">'-24'</span>, <span class="code-string">'-12'</span>, <span class="code-string">'0'</span>, <span class="code-string">'6'</span>, <span class="code-string">'12'</span>]
+});
+
+<span class="code-comment">// With mute toggle</span>
+<span class="code-keyword">new</span> Slider(<span class="code-string">'#toggle'</span>, {
+  showToggle: <span class="code-keyword">true</span>,
+  toggleLabel: <span class="code-string">'Mute'</span>,
+  toggleLedColor: <span class="code-string">'#ff4444'</span>
+});
+</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Complete Example -->
+    <section class="section">
+      <h2>Complete Example</h2>
+      <div class="demo-card">
+        <div class="demo-info">
+          <h3>Full Working HTML + JavaScript</h3>
+          <div class="code-block"><code><span class="code-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="code-tag">&lt;html&gt;</span>
+<span class="code-tag">&lt;head&gt;</span>
+  <span class="code-tag">&lt;title&gt;</span>Audio Mixer<span class="code-tag">&lt;/title&gt;</span>
+  <span class="code-tag">&lt;style&gt;</span>
+    .mixer { display: flex; gap: 20px; padding: 30px; background: #222; }
+    .channel { text-align: center; }
+  <span class="code-tag">&lt;/style&gt;</span>
+<span class="code-tag">&lt;/head&gt;</span>
+<span class="code-tag">&lt;body&gt;</span>
+  <span class="code-tag">&lt;div</span> <span class="code-property">class</span>=<span class="code-string">"mixer"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-property">class</span>=<span class="code-string">"channel"</span> <span class="code-property">id</span>=<span class="code-string">"ch1"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-property">class</span>=<span class="code-string">"channel"</span> <span class="code-property">id</span>=<span class="code-string">"ch2"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-property">class</span>=<span class="code-string">"channel"</span> <span class="code-property">id</span>=<span class="code-string">"master"</span><span class="code-tag">&gt;&lt;/div&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+
+  <span class="code-tag">&lt;script</span> <span class="code-property">type</span>=<span class="code-string">"module"</span><span class="code-tag">&gt;</span>
+    <span class="code-keyword">import</span> { Slider } <span class="code-keyword">from</span> <span class="code-string">'https://unpkg.com/audio-knobs/dist/knobs.esm.js'</span>;
+
+    <span class="code-comment">// Create mixer channels</span>
+    <span class="code-keyword">const</span> ch1 = <span class="code-keyword">new</span> Slider(<span class="code-string">'#ch1'</span>, {
+      min: <span class="code-number">0</span>, max: <span class="code-number">10</span>, value: <span class="code-number">7</span>,
+      length: <span class="code-number">150</span>, label: <span class="code-string">'CH 1'</span>
+    });
+
+    <span class="code-keyword">const</span> ch2 = <span class="code-keyword">new</span> Slider(<span class="code-string">'#ch2'</span>, {
+      min: <span class="code-number">0</span>, max: <span class="code-number">10</span>, value: <span class="code-number">5</span>,
+      length: <span class="code-number">150</span>, label: <span class="code-string">'CH 2'</span>
+    });
+
+    <span class="code-keyword">const</span> master = <span class="code-keyword">new</span> Slider(<span class="code-string">'#master'</span>, {
+      min: <span class="code-number">0</span>, max: <span class="code-number">10</span>, value: <span class="code-number">8</span>,
+      length: <span class="code-number">150</span>, label: <span class="code-string">'Master'</span>,
+      thumbColor: <span class="code-string">'#cc4444'</span>
+    });
+
+    <span class="code-comment">// Handle changes</span>
+    ch1.onChange(e => console.log(<span class="code-string">'CH1:'</span>, e.value));
+    ch2.onChange(e => console.log(<span class="code-string">'CH2:'</span>, e.value));
+    master.onChange(e => console.log(<span class="code-string">'Master:'</span>, e.value));
+  <span class="code-tag">&lt;/script&gt;</span>
+<span class="code-tag">&lt;/body&gt;</span>
+<span class="code-tag">&lt;/html&gt;</span>
+</code></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <a href="html-css-example.html">← HTML/CSS Example</a> |
+    <a href="index.html">Back to Examples</a>
+  </footer>
+
+  <script type="module">
+    import {
+      Knob,
+      Slider,
+      createVolumeKnob,
+      createPanKnob,
+      createSpinalTapKnob,
+      createMuteFader
+    } from '../dist/knobs.esm.js';
+
+    // Basic Creation
+    new Knob('#basic-knob', { min: 0, max: 100, value: 50, size: 60, label: 'Volume' });
+    new Slider('#basic-slider', { min: 0, max: 10, value: 5, length: 120, label: 'Level' });
+
+    // Event Handling
+    const eventKnob = new Knob('#event-knob', {
+      min: 0, max: 100, value: 50, size: 80,
+      dialColor: '#ff6b6b'
+    });
+    const eventValue = document.getElementById('event-value');
+    eventKnob.onChange((e) => {
+      eventValue.textContent = Math.round(e.value);
+    });
+
+    // Programmatic Control
+    const programKnob = new Knob('#program-knob', {
+      min: 0, max: 100, value: 50, size: 80
+    });
+    const programValue = document.getElementById('program-value');
+    programKnob.onChange((e) => {
+      programValue.textContent = Math.round(e.value);
+    });
+
+    document.getElementById('btn-min').onclick = () => programKnob.setValue(0);
+    document.getElementById('btn-mid').onclick = () => programKnob.setValue(50);
+    document.getElementById('btn-max').onclick = () => programKnob.setValue(100);
+    document.getElementById('btn-random').onclick = () => programKnob.setValue(Math.random() * 100);
+
+    // Styling Options
+    new Knob('#style-vintage', {
+      min: 0, max: 10, value: 7, size: 60,
+      dialColor: '#8b4513',
+      indicatorColor: '#f5deb3',
+      tickColor: '#daa520',
+      tickCount: 11
+    });
+    new Knob('#style-modern', {
+      min: 0, max: 100, value: 75, size: 60,
+      dialColor: '#1a1a1a',
+      indicatorColor: '#00ff88',
+      tickColor: '#00ff88',
+      showValueDisplay: true
+    });
+    new Knob('#style-neon', {
+      min: 0, max: 100, value: 60, size: 60,
+      dialColor: '#1a1a2e',
+      indicatorColor: '#ff00ff',
+      tickColor: '#ff00ff',
+      tickCount: 11
+    });
+    new Knob('#style-minimal', {
+      min: 0, max: 100, value: 50, size: 60,
+      dialColor: '#444',
+      indicatorColor: '#fff',
+      showTicks: false
+    });
+
+    // Factory Functions
+    createVolumeKnob('#factory-volume', { size: 55 });
+    createPanKnob('#factory-pan', { size: 55 });
+    createSpinalTapKnob('#factory-spinal', { size: 55 });
+    createMuteFader('#factory-mute', { length: 120 });
+
+    // Slider Configuration
+    new Slider('#slider-basic', {
+      min: 0, max: 10, value: 7, length: 130, label: 'Vol'
+    });
+    new Slider('#slider-display', {
+      min: 0, max: 100, value: 50, length: 130, label: 'Mix',
+      showValueDisplay: true, thumbColor: '#4ecdc4'
+    });
+    new Slider('#slider-labels', {
+      min: -24, max: 12, value: 0, length: 130, label: 'Gain',
+      tickCount: 5, valueLabels: ['-24', '-12', '0', '6', '12'],
+      thumbColor: '#ff6b6b'
+    });
+    new Slider('#slider-toggle', {
+      min: 0, max: 10, value: 7, length: 130, label: 'CH',
+      showToggle: true, toggleLabel: 'Mute', toggleLedColor: '#ff4444'
+    });
+
+    console.log('JavaScript Example loaded!');
+  </script>
+</body>
+</html>

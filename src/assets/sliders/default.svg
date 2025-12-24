@@ -1,0 +1,22 @@
+<svg viewBox="0 0 30 40" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="thumbGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="var(--slider-thumb-highlight, #666)"/>
+      <stop offset="100%" stop-color="var(--slider-thumb-color, #444)"/>
+    </linearGradient>
+  </defs>
+  <!-- Thumb body -->
+  <rect x="0" y="0" width="30" height="40" rx="3" ry="3"
+        fill="url(#thumbGradient)"/>
+  <!-- Grip ridges -->
+  <line x1="4" y1="8" x2="26" y2="8" stroke="var(--slider-thumb-shadow, #333)" stroke-width="1"/>
+  <line x1="4" y1="9.5" x2="26" y2="9.5" stroke="var(--slider-thumb-highlight, #666)" stroke-width="0.5"/>
+  <line x1="4" y1="14" x2="26" y2="14" stroke="var(--slider-thumb-shadow, #333)" stroke-width="1"/>
+  <line x1="4" y1="15.5" x2="26" y2="15.5" stroke="var(--slider-thumb-highlight, #666)" stroke-width="0.5"/>
+  <line x1="4" y1="26" x2="26" y2="26" stroke="var(--slider-thumb-shadow, #333)" stroke-width="1"/>
+  <line x1="4" y1="27.5" x2="26" y2="27.5" stroke="var(--slider-thumb-highlight, #666)" stroke-width="0.5"/>
+  <line x1="4" y1="32" x2="26" y2="32" stroke="var(--slider-thumb-shadow, #333)" stroke-width="1"/>
+  <line x1="4" y1="33.5" x2="26" y2="33.5" stroke="var(--slider-thumb-highlight, #666)" stroke-width="0.5"/>
+  <!-- Center indicator line -->
+  <rect x="0" y="19" width="30" height="2" fill="var(--slider-indicator-color, #fff)" opacity="0.8"/>
+</svg>

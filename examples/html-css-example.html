@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HTML & CSS Example - Audio Knobs</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      line-height: 1.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, #238636 0%, #1a6b2c 100%);
+      padding: 30px 20px;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .header-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .back-link {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .back-link:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: #fff;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .intro {
+      margin-bottom: 40px;
+      padding: 25px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+    }
+
+    .intro h2 {
+      margin: 0 0 10px 0;
+      color: #fff;
+    }
+
+    .intro p {
+      margin: 0;
+      color: #8b949e;
+    }
+
+    .section {
+      margin-bottom: 50px;
+    }
+
+    .section h2 {
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #fff;
+      margin: 0 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #30363d;
+    }
+
+    .demo-card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 25px;
+    }
+
+    .demo-preview {
+      padding: 30px;
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-bottom: 1px solid #30363d;
+    }
+
+    .demo-info {
+      padding: 20px;
+    }
+
+    .demo-info h3 {
+      margin: 0 0 15px 0;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .code-tabs {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .code-tab {
+      padding: 8px 16px;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 6px 6px 0 0;
+      color: #8b949e;
+      font-size: 0.85rem;
+      cursor: default;
+      border-bottom: none;
+    }
+
+    .code-tab.active {
+      background: #0d1117;
+      color: #fff;
+    }
+
+    .code-block {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 0 8px 8px 8px;
+      padding: 15px;
+      overflow-x: auto;
+      font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      white-space: pre;
+    }
+
+    .code-block code {
+      color: #c9d1d9;
+    }
+
+    .code-keyword { color: #ff7b72; }
+    .code-string { color: #a5d6ff; }
+    .code-number { color: #79c0ff; }
+    .code-property { color: #d2a8ff; }
+    .code-comment { color: #8b949e; }
+    .code-tag { color: #7ee787; }
+    .code-attr { color: #79c0ff; }
+
+    .control-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .control-label {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #8b949e;
+    }
+
+    .value-display {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      font-family: 'SF Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    .value-display span {
+      color: #7ee787;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: #8b949e;
+      border-top: 1px solid #30363d;
+    }
+
+    footer a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <a href="index.html" class="back-link">← Back to Examples</a>
+      <h1>HTML & CSS Example</h1>
+      <div style="width: 120px;"></div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="intro">
+      <h2>Declarative HTML Usage</h2>
+      <p>Create knobs and sliders using HTML classes and data attributes. No JavaScript configuration needed - just call <code>initFromDOM()</code> once.</p>
+    </div>
+
+    <!-- Basic Example -->
+    <section class="section">
+      <h2>Basic Knobs</h2>
+      <div class="demo-card">
+        <div class="demo-preview">
+          <div class="control-wrapper">
+            <div class="audio-knob"
+                 data-min="0"
+                 data-max="10"
+                 data-value="5"
+                 data-label="Volume"></div>
+            <div class="control-label">Volume</div>
+          </div>
+          <div class="control-wrapper">
+            <div class="audio-knob"
+                 data-min="0"
+                 data-max="100"
+                 data-value="50"
+                 data-label="Pan"></div>
+            <div class="control-label">Pan</div>
+          </div>
+          <div class="control-wrapper">
+            <div class="audio-knob"
+                 data-min="20"
+                 data-max="20000"
+                 data-value="1000"
+                 data-label="Freq">
+            </div>
+            <div class="control-label">Frequency</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>HTML</h3>
+          <div class="code-block"><code><span class="code-comment">&lt;!-- Include the library --&gt;</span>
+<span class="code-tag">&lt;script</span> <span class="code-attr">src</span>=<span class="code-string">"audio-knobs/dist/knobs.js"</span><span class="code-tag">&gt;&lt;/script&gt;</span>
+
+<span class="code-comment">&lt;!-- Create knobs with data attributes --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"audio-knob"</span>
+     <span class="code-attr">data-min</span>=<span class="code-string">"0"</span>
+     <span class="code-attr">data-max</span>=<span class="code-string">"10"</span>
+     <span class="code-attr">data-value</span>=<span class="code-string">"5"</span>
+     <span class="code-attr">data-label</span>=<span class="code-string">"Volume"</span><span class="code-tag">&gt;
+&lt;/div&gt;</span>
+
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"audio-knob"</span>
+     <span class="code-attr">data-min</span>=<span class="code-string">"0"</span>
+     <span class="code-attr">data-max</span>=<span class="code-string">"100"</span>
+     <span class="code-attr">data-value</span>=<span class="code-string">"50"</span>
+     <span class="code-attr">data-label</span>=<span class="code-string">"Pan"</span><span class="code-tag">&gt;
+&lt;/div&gt;</span>
+
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"audio-knob"</span>
+     <span class="code-attr">data-min</span>=<span class="code-string">"20"</span>
+     <span class="code-attr">data-max</span>=<span class="code-string">"20000"</span>
+     <span class="code-attr">data-value</span>=<span class="code-string">"1000"</span>
+     <span class="code-attr">data-label</span>=<span class="code-string">"Freq"</span><span class="code-tag">&gt;
+&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- Initialize all knobs --&gt;</span>
+<span class="code-tag">&lt;script&gt;</span>
+  Knobs.initFromDOM();
+<span class="code-tag">&lt;/script&gt;</span>
+</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Styled Knobs -->
+    <section class="section">
+      <h2>Custom Styled Knobs</h2>
+      <div class="demo-card">
+        <div class="demo-preview" style="background: #0a0a0a;">
+          <div class="control-wrapper">
+            <div class="audio-knob"
+                 data-min="0"
+                 data-max="11"
+                 data-value="7"
+                 data-size="70"
+                 data-dial-color="#8b4513"
+                 data-indicator-color="#f5deb3"
+                 data-tick-color="#daa520"
+                 data-tick-count="12"></div>
+            <div class="control-label">Vintage</div>
+          </div>
+          <div class="control-wrapper">
+            <div class="audio-knob"
+                 data-min="0"
+                 data-max="100"
+                 data-value="75"
+                 data-size="70"
+                 data-dial-color="#1a1a1a"
+                 data-indicator-color="#00ff88"
+                 data-tick-color="#00ff88"
+                 data-show-value-display="true">
+              </div>
+            <div class="control-label">Modern</div>
+          </div>
+          <div class="control-wrapper">
+            <div class="audio-knob"
+                 data-min="0"
+                 data-max="100"
+                 data-value="50"
+                 data-size="70"
+                 data-dial-color="#e74c3c"
+                 data-indicator-color="#fff"
+                 data-show-ticks="false"></div>
+            <div class="control-label">Minimal</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>HTML with Styling Attributes</h3>
+          <div class="code-block"><code><span class="code-comment">&lt;!-- Vintage style --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"audio-knob"</span>
+     <span class="code-attr">data-min</span>=<span class="code-string">"0"</span>
+     <span class="code-attr">data-max</span>=<span class="code-string">"11"</span>
+     <span class="code-attr">data-value</span>=<span class="code-string">"7"</span>
+     <span class="code-attr">data-size</span>=<span class="code-string">"70"</span>
+     <span class="code-attr">data-dial-color</span>=<span class="code-string">"#8b4513"</span>
+     <span class="code-attr">data-indicator-color</span>=<span class="code-string">"#f5deb3"</span>
+     <span class="code-attr">data-tick-color</span>=<span class="code-string">"#daa520"</span>
+     <span class="code-attr">data-tick-count</span>=<span class="code-string">"12"</span><span class="code-tag">&gt;
+&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- Modern style with value display --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"audio-knob"</span>
+     <span class="code-attr">data-min</span>=<span class="code-string">"0"</span>
+     <span class="code-attr">data-max</span>=<span class="code-string">"100"</span>
+     <span class="code-attr">data-value</span>=<span class="code-string">"75"</span>
+     <span class="code-attr">data-dial-color</span>=<span class="code-string">"#1a1a1a"</span>
+     <span class="code-attr">data-indicator-color</span>=<span class="code-string">"#00ff88"</span>
+     <span class="code-attr">data-show-value-display</span>=<span class="code-string">"true"</span><span class="code-tag">&gt;
+&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- Minimal style (no ticks) --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"audio-knob"</span>
+     <span class="code-attr">data-dial-color</span>=<span class="code-string">"#e74c3c"</span>
+     <span class="code-attr">data-indicator-color</span>=<span class="code-string">"#fff"</span>
+     <span class="code-attr">data-show-ticks</span>=<span class="code-string">"false"</span><span class="code-tag">&gt;
+&lt;/div&gt;</span>
+</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sliders -->
+    <section class="section">
+      <h2>Sliders</h2>
+      <div class="demo-card">
+        <div class="demo-preview" style="background: linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%);">
+          <div class="control-wrapper">
+            <div class="audio-slider"
+                 data-min="0"
+                 data-max="10"
+                 data-value="7"
+                 data-length="140"
+                 data-label="Vol"></div>
+          </div>
+          <div class="control-wrapper">
+            <div class="audio-slider"
+                 data-min="-24"
+                 data-max="12"
+                 data-value="0"
+                 data-length="140"
+                 data-label="Gain"
+                 data-show-value-display="true"
+                 data-thumb-color="#ff6b6b"></div>
+          </div>
+          <div class="control-wrapper">
+            <div class="audio-slider"
+                 data-min="0"
+                 data-max="100"
+                 data-value="50"
+                 data-length="140"
+                 data-label="Mix"
+                 data-thumb-color="#4ecdc4"
+                 data-track-color="#1a1a1a"></div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>HTML</h3>
+          <div class="code-block"><code><span class="code-comment">&lt;!-- Basic slider --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"audio-slider"</span>
+     <span class="code-attr">data-min</span>=<span class="code-string">"0"</span>
+     <span class="code-attr">data-max</span>=<span class="code-string">"10"</span>
+     <span class="code-attr">data-value</span>=<span class="code-string">"7"</span>
+     <span class="code-attr">data-length</span>=<span class="code-string">"140"</span>
+     <span class="code-attr">data-label</span>=<span class="code-string">"Vol"</span><span class="code-tag">&gt;
+&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- Slider with value display --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"audio-slider"</span>
+     <span class="code-attr">data-min</span>=<span class="code-string">"-24"</span>
+     <span class="code-attr">data-max</span>=<span class="code-string">"12"</span>
+     <span class="code-attr">data-value</span>=<span class="code-string">"0"</span>
+     <span class="code-attr">data-label</span>=<span class="code-string">"Gain"</span>
+     <span class="code-attr">data-show-value-display</span>=<span class="code-string">"true"</span>
+     <span class="code-attr">data-thumb-color</span>=<span class="code-string">"#ff6b6b"</span><span class="code-tag">&gt;
+&lt;/div&gt;</span>
+
+<span class="code-comment">&lt;!-- Custom colored slider --&gt;</span>
+<span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"audio-slider"</span>
+     <span class="code-attr">data-thumb-color</span>=<span class="code-string">"#4ecdc4"</span>
+     <span class="code-attr">data-track-color</span>=<span class="code-string">"#1a1a1a"</span><span class="code-tag">&gt;
+&lt;/div&gt;</span>
+</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Complete Example -->
+    <section class="section">
+      <h2>Complete HTML File</h2>
+      <div class="demo-card">
+        <div class="demo-info">
+          <h3>Full Working Example</h3>
+          <div class="code-block"><code><span class="code-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="code-tag">&lt;html&gt;</span>
+<span class="code-tag">&lt;head&gt;</span>
+  <span class="code-tag">&lt;title&gt;</span>My Audio App<span class="code-tag">&lt;/title&gt;</span>
+  <span class="code-tag">&lt;style&gt;</span>
+    .controls {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      background: #222;
+    }
+  <span class="code-tag">&lt;/style&gt;</span>
+<span class="code-tag">&lt;/head&gt;</span>
+<span class="code-tag">&lt;body&gt;</span>
+
+  <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"controls"</span><span class="code-tag">&gt;</span>
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"audio-knob"</span>
+         <span class="code-attr">data-min</span>=<span class="code-string">"0"</span>
+         <span class="code-attr">data-max</span>=<span class="code-string">"100"</span>
+         <span class="code-attr">data-value</span>=<span class="code-string">"50"</span>
+         <span class="code-attr">data-label</span>=<span class="code-string">"Volume"</span><span class="code-tag">&gt;
+    &lt;/div&gt;</span>
+
+    <span class="code-tag">&lt;div</span> <span class="code-attr">class</span>=<span class="code-string">"audio-slider"</span>
+         <span class="code-attr">data-min</span>=<span class="code-string">"0"</span>
+         <span class="code-attr">data-max</span>=<span class="code-string">"10"</span>
+         <span class="code-attr">data-value</span>=<span class="code-string">"5"</span>
+         <span class="code-attr">data-label</span>=<span class="code-string">"Fader"</span><span class="code-tag">&gt;
+    &lt;/div&gt;</span>
+  <span class="code-tag">&lt;/div&gt;</span>
+
+  <span class="code-comment">&lt;!-- Include library (IIFE build for script tags) --&gt;</span>
+  <span class="code-tag">&lt;script</span> <span class="code-attr">src</span>=<span class="code-string">"https://unpkg.com/audio-knobs/dist/knobs.js"</span><span class="code-tag">&gt;&lt;/script&gt;</span>
+
+  <span class="code-tag">&lt;script&gt;</span>
+    <span class="code-comment">// Initialize all controls from HTML</span>
+    <span class="code-keyword">const</span> { knobs, sliders } = Knobs.initFromDOM();
+
+    <span class="code-comment">// Optionally add event listeners</span>
+    knobs[<span class="code-number">0</span>].onChange(<span class="code-keyword">function</span>(e) {
+      console.log(<span class="code-string">'Volume:'</span>, e.value);
+    });
+  <span class="code-tag">&lt;/script&gt;</span>
+
+<span class="code-tag">&lt;/body&gt;</span>
+<span class="code-tag">&lt;/html&gt;</span>
+</code></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Available Attributes -->
+    <section class="section">
+      <h2>Available Data Attributes</h2>
+      <div class="demo-card">
+        <div class="demo-info">
+          <h3>Knob Attributes</h3>
+          <div class="code-block"><code><span class="code-attr">data-min</span>              <span class="code-comment">// Minimum value (default: 0)</span>
+<span class="code-attr">data-max</span>              <span class="code-comment">// Maximum value (default: 10)</span>
+<span class="code-attr">data-value</span>            <span class="code-comment">// Initial value (default: 5)</span>
+<span class="code-attr">data-step</span>             <span class="code-comment">// Step increment (default: 0.1)</span>
+<span class="code-attr">data-size</span>             <span class="code-comment">// Diameter in pixels (default: 60)</span>
+<span class="code-attr">data-label</span>            <span class="code-comment">// Label text below knob</span>
+<span class="code-attr">data-mode</span>             <span class="code-comment">// 'bounded' or 'infinite'</span>
+<span class="code-attr">data-dial-color</span>       <span class="code-comment">// Dial face color</span>
+<span class="code-attr">data-indicator-color</span>  <span class="code-comment">// Pointer/indicator color</span>
+<span class="code-attr">data-tick-color</span>       <span class="code-comment">// Tick mark color</span>
+<span class="code-attr">data-label-color</span>      <span class="code-comment">// Label text color</span>
+<span class="code-attr">data-tick-count</span>       <span class="code-comment">// Number of tick marks</span>
+<span class="code-attr">data-show-ticks</span>       <span class="code-comment">// Show tick marks (true/false)</span>
+<span class="code-attr">data-show-value-display</span>  <span class="code-comment">// Show numeric readout</span>
+</code></div>
+
+          <h3 style="margin-top: 20px;">Slider Attributes</h3>
+          <div class="code-block"><code><span class="code-attr">data-min</span>              <span class="code-comment">// Minimum value (default: 0)</span>
+<span class="code-attr">data-max</span>              <span class="code-comment">// Maximum value (default: 10)</span>
+<span class="code-attr">data-value</span>            <span class="code-comment">// Initial value (default: 5)</span>
+<span class="code-attr">data-step</span>             <span class="code-comment">// Step increment (default: 0.1)</span>
+<span class="code-attr">data-length</span>           <span class="code-comment">// Track length in pixels</span>
+<span class="code-attr">data-width</span>            <span class="code-comment">// Track width in pixels</span>
+<span class="code-attr">data-label</span>            <span class="code-comment">// Label text below slider</span>
+<span class="code-attr">data-thumb-color</span>      <span class="code-comment">// Thumb/handle color</span>
+<span class="code-attr">data-track-color</span>      <span class="code-comment">// Track background color</span>
+<span class="code-attr">data-show-value-display</span>  <span class="code-comment">// Show numeric readout</span>
+<span class="code-attr">data-show-toggle</span>      <span class="code-comment">// Show mute toggle button</span>
+<span class="code-attr">data-toggle-label</span>     <span class="code-comment">// Toggle button label</span>
+</code></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <a href="index.html">← Back to Examples</a> |
+    <a href="javascript-example.html">JavaScript Example →</a>
+  </footer>
+
+  <script type="module">
+    import { initFromDOM } from '../dist/knobs.esm.js';
+
+    // Initialize all controls defined in HTML
+    const { knobs, sliders } = initFromDOM();
+    console.log(`Initialized ${knobs.length} knobs and ${sliders.length} sliders from HTML`);
+  </script>
+</body>
+</html>

@@ -528,6 +528,139 @@ knob.<span class="code-property">setValue</span>(<span class="code-number">75</s
         </div>
       </div>
     </section>
+
+    <!-- Declarative HTML -->
+    <section class="section">
+      <div class="section-header">
+        <h2>Declarative HTML</h2>
+        <span class="section-badge">No JavaScript</span>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-preview">
+          <div class="control-wrapper">
+            <div class="audio-knob"
+                 data-min="0"
+                 data-max="10"
+                 data-value="7"
+                 data-label="Volume"
+                 data-size="60"></div>
+            <div class="control-label">From HTML</div>
+          </div>
+          <div class="control-wrapper">
+            <div class="audio-knob"
+                 data-min="0"
+                 data-max="100"
+                 data-value="50"
+                 data-label="Mix"
+                 data-size="60"
+                 data-dial-color="#4ecdc4"></div>
+            <div class="control-label">Styled</div>
+          </div>
+          <div class="control-wrapper">
+            <div class="audio-slider"
+                 data-min="0"
+                 data-max="10"
+                 data-value="5"
+                 data-label="Level"
+                 data-length="120"></div>
+            <div class="control-label">Slider</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Create Controls with HTML Classes</h3>
+          <p>Define knobs and sliders directly in HTML using classes and data attributes. Call <code>initFromDOM()</code> to initialize them all at once.</p>
+          <div class="code-block"><code><span class="code-comment">&lt;!-- HTML: Just add classes and data attributes --&gt;</span>
+&lt;div <span class="code-property">class</span>=<span class="code-string">"audio-knob"</span>
+     <span class="code-property">data-min</span>=<span class="code-string">"0"</span>
+     <span class="code-property">data-max</span>=<span class="code-string">"10"</span>
+     <span class="code-property">data-value</span>=<span class="code-string">"7"</span>
+     <span class="code-property">data-label</span>=<span class="code-string">"Volume"</span>&gt;&lt;/div&gt;
+
+&lt;div <span class="code-property">class</span>=<span class="code-string">"audio-slider"</span>
+     <span class="code-property">data-min</span>=<span class="code-string">"0"</span>
+     <span class="code-property">data-max</span>=<span class="code-string">"100"</span>
+     <span class="code-property">data-value</span>=<span class="code-string">"50"</span>
+     <span class="code-property">data-label</span>=<span class="code-string">"Fader"</span>&gt;&lt;/div&gt;</code></div>
+          <div class="code-block" style="margin-top: 15px;"><code><span class="code-comment">// JavaScript: Initialize all controls in one call</span>
+<span class="code-keyword">import</span> { initFromDOM } <span class="code-keyword">from</span> <span class="code-string">'audio-knobs'</span>;
+
+<span class="code-keyword">const</span> { knobs, sliders } = initFromDOM();
+
+<span class="code-comment">// Access initialized controls</span>
+knobs[<span class="code-number">0</span>].onChange((e) => {
+  console.log(<span class="code-string">'Volume:'</span>, e.value);
+});</code></div>
+        </div>
+      </div>
+
+      <div class="demo-card">
+        <div class="demo-preview dark">
+          <div class="control-wrapper">
+            <div class="audio-knob"
+                 data-min="0"
+                 data-max="11"
+                 data-value="5"
+                 data-label="Gain"
+                 data-size="55"
+                 data-tick-count="12"
+                 data-dial-color="#8b4513"
+                 data-indicator-color="#f5deb3"
+                 data-tick-color="#daa520"></div>
+            <div class="control-label">Vintage</div>
+          </div>
+          <div class="control-wrapper">
+            <div class="audio-knob"
+                 data-min="0"
+                 data-max="100"
+                 data-value="75"
+                 data-label="Freq"
+                 data-size="55"
+                 data-show-value-display="true"
+                 data-dial-color="#1a1a1a"
+                 data-indicator-color="#00ff88"></div>
+            <div class="control-label">Modern</div>
+          </div>
+          <div class="control-wrapper">
+            <div class="audio-slider"
+                 data-min="-24"
+                 data-max="12"
+                 data-value="0"
+                 data-label="dB"
+                 data-length="130"
+                 data-show-value-display="true"
+                 data-thumb-color="#ff6b6b"></div>
+            <div class="control-label">Gain</div>
+          </div>
+        </div>
+        <div class="demo-info">
+          <h3>Available Data Attributes</h3>
+          <p>All knob and slider options can be set via data attributes using kebab-case naming.</p>
+          <div class="code-block"><code><span class="code-comment">&lt;!-- Common attributes --&gt;</span>
+<span class="code-property">data-min</span>           <span class="code-comment">// Minimum value</span>
+<span class="code-property">data-max</span>           <span class="code-comment">// Maximum value</span>
+<span class="code-property">data-value</span>         <span class="code-comment">// Initial value</span>
+<span class="code-property">data-step</span>          <span class="code-comment">// Step increment</span>
+<span class="code-property">data-label</span>         <span class="code-comment">// Label text</span>
+
+<span class="code-comment">&lt;!-- Knob-specific --&gt;</span>
+<span class="code-property">data-size</span>          <span class="code-comment">// Diameter in pixels</span>
+<span class="code-property">data-mode</span>          <span class="code-comment">// 'bounded' or 'endless'</span>
+<span class="code-property">data-dial-color</span>    <span class="code-comment">// Dial face color</span>
+<span class="code-property">data-indicator-color</span>  <span class="code-comment">// Pointer color</span>
+
+<span class="code-comment">&lt;!-- Slider-specific --&gt;</span>
+<span class="code-property">data-length</span>        <span class="code-comment">// Track length in pixels</span>
+<span class="code-property">data-thumb-color</span>   <span class="code-comment">// Thumb/handle color</span>
+<span class="code-property">data-track-color</span>   <span class="code-comment">// Track background color</span>
+
+<span class="code-comment">&lt;!-- Display options --&gt;</span>
+<span class="code-property">data-show-ticks</span>    <span class="code-comment">// Show tick marks (true/false)</span>
+<span class="code-property">data-show-value-display</span>  <span class="code-comment">// Show numeric value</span>
+<span class="code-property">data-tick-count</span>    <span class="code-comment">// Number of tick marks</span></code></div>
+        </div>
+      </div>
+    </section>
   </div>
 
   <footer>
@@ -535,7 +668,7 @@ knob.<span class="code-property">setValue</span>(<span class="code-number">75</s
   </footer>
 
   <script type="module">
-    import { Knob, Slider, createPanKnob, createMuteFader } from '../dist/knobs.esm.js';
+    import { Knob, Slider, createPanKnob, createMuteFader, initFromDOM } from '../dist/knobs.esm.js';
 
     // Basic Usage
     new Knob('#basic-knob', { min: 0, max: 100, value: 50, size: 60, label: 'Volume' });
@@ -636,6 +769,10 @@ knob.<span class="code-property">setValue</span>(<span class="code-number">75</s
       valueLabels: ['-24', '-12', '0', '6', '12'],
       thumbColor: '#ff6b6b'
     });
+
+    // Declarative HTML - Initialize all elements with .audio-knob and .audio-slider classes
+    const { knobs: declarativeKnobs, sliders: declarativeSliders } = initFromDOM();
+    console.log(`Initialized ${declarativeKnobs.length} knobs and ${declarativeSliders.length} sliders from HTML`);
 
     console.log('API Demo loaded!');
   </script>

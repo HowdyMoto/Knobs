@@ -1,4 +1,5 @@
 import { KnobOptions, DEFAULT_OPTIONS } from './types';
+import { getKnobSvg, parseSvgString, getViewBoxDimensions, lightenColor } from './svg-assets';
 
 // Rotation constants (shared with knob.ts via re-export)
 /** Total rotation range in degrees for unbounded knobs */
@@ -15,10 +16,9 @@ export class SVGRenderer {
   private size: number;
   private instanceId: number;
   private options: typeof DEFAULT_OPTIONS &
-    Pick<KnobOptions, 'min' | 'max' | 'valueLabels' | 'className'>;
+    Pick<KnobOptions, 'min' | 'max' | 'valueLabels' | 'className' | 'knobStyle' | 'knobSvg'>;
 
   // Unique filter IDs for this instance
-  private bodyGradientId: string;
   private shadowFilterId: string;
 
   constructor(options: KnobOptions, instanceId: number = 0) {
@@ -27,7 +27,6 @@ export class SVGRenderer {
     this.instanceId = instanceId;
 
     // Generate unique IDs for SVG filters to avoid conflicts between multiple knobs
-    this.bodyGradientId = `knob-body-gradient-${this.instanceId}`;
     this.shadowFilterId = `knob-shadow-${this.instanceId}`;
   }
 
@@ -59,10 +58,6 @@ export class SVGRenderer {
       svg.appendChild(labels);
     }
 
-    // Create the knob body
-    const knobBody = this.createKnobBody(padding);
-    svg.appendChild(knobBody);
-
     // Create the dial/indicator group (this rotates)
     const dial = this.createDial(padding);
     dial.setAttribute('class', 'knob-dial');
@@ -76,25 +71,6 @@ export class SVGRenderer {
    */
   private createDefs(): SVGDefsElement {
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-
-    // Knob body gradient (3D effect)
-    const bodyGradient = document.createElementNS('http://www.w3.org/2000/svg', 'radialGradient');
-    bodyGradient.setAttribute('id', this.bodyGradientId);
-    bodyGradient.setAttribute('cx', '30%');
-    bodyGradient.setAttribute('cy', '30%');
-    bodyGradient.setAttribute('r', '70%');
-
-    const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-    stop1.setAttribute('offset', '0%');
-    stop1.setAttribute('stop-color', this.lightenColor(this.options.dialColor, 40));
-
-    const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-    stop2.setAttribute('offset', '100%');
-    stop2.setAttribute('stop-color', this.options.dialColor);
-
-    bodyGradient.appendChild(stop1);
-    bodyGradient.appendChild(stop2);
-    defs.appendChild(bodyGradient);
 
     // Drop shadow for knob
     const shadowFilter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
@@ -211,122 +187,45 @@ export class SVGRenderer {
   }
 
   /**
-   * Create the 3D knob body
-   */
-  private createKnobBody(padding: number): SVGGElement {
-    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    const center = this.size / 2 + padding;
-    const radius = this.size * 0.35;
-
-    // Outer ring (bezel)
-    const outerRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    outerRing.setAttribute('cx', String(center));
-    outerRing.setAttribute('cy', String(center));
-    outerRing.setAttribute('r', String(radius + 3));
-    outerRing.setAttribute('fill', this.options.bezelColor);
-    outerRing.setAttribute('filter', `url(#${this.shadowFilterId})`);
-    group.appendChild(outerRing);
-
-    // Main knob body
-    const body = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    body.setAttribute('cx', String(center));
-    body.setAttribute('cy', String(center));
-    body.setAttribute('r', String(radius));
-    body.setAttribute('fill', `url(#${this.bodyGradientId})`);
-    group.appendChild(body);
-
-    return group;
-  }
-
-  /**
-   * Create the rotating dial/indicator
+   * Create the rotating dial/indicator using SVG assets
    */
   private createDial(padding: number): SVGGElement {
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     const center = this.size / 2 + padding;
-    const radius = this.size * 0.35;
+    const radius = this.size * 0.5;
 
-    if (this.options.gripBumps) {
-      // Encoder style: notched/bumpy edge dial
-      const bumpCount = this.options.gripBumpCount;
-      const bumpDepth = radius * 0.15;
-      const innerRadius = radius - bumpDepth;
+    // Get SVG string from options or preset
+    const svgString = getKnobSvg(this.options.knobStyle, this.options.knobSvg);
 
-      // Build a path with notches around the edge
-      let pathData = '';
-      for (let i = 0; i < bumpCount; i++) {
-        const startAngle = (360 / bumpCount) * i;
-        const midAngle = startAngle + (360 / bumpCount) * 0.5;
-        const endAngle = startAngle + (360 / bumpCount);
+    // Parse the SVG and get its content
+    const svgContent = parseSvgString(svgString, this.instanceId);
+    const viewBox = getViewBoxDimensions(svgContent);
 
-        const startRad = (startAngle - 90) * (Math.PI / 180);
-        const midRad = (midAngle - 90) * (Math.PI / 180);
-        const endRad = (endAngle - 90) * (Math.PI / 180);
+    // Calculate scale to fit the dial within the knob radius
+    const dialSize = radius * 2;
+    const scale = dialSize / Math.max(viewBox.width, viewBox.height);
 
-        // Outer point (bump peak)
-        const outerX = center + Math.cos(startRad) * radius;
-        const outerY = center + Math.sin(startRad) * radius;
+    // Create a nested group for scaling and positioning
+    const dialGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
-        // Inner point (notch valley)
-        const innerX = center + Math.cos(midRad) * innerRadius;
-        const innerY = center + Math.sin(midRad) * innerRadius;
+    // Set CSS variables for colors on the dial group
+    dialGroup.style.setProperty('--knob-dial-color', this.options.dialColor);
+    dialGroup.style.setProperty('--knob-dial-highlight', lightenColor(this.options.dialColor, 40));
+    dialGroup.style.setProperty('--knob-indicator-color', this.options.indicatorColor);
 
-        // Next outer point
-        const nextOuterX = center + Math.cos(endRad) * radius;
-        const nextOuterY = center + Math.sin(endRad) * radius;
+    // Position and scale the SVG content
+    // Center the viewBox at the knob center
+    const offsetX = center - (viewBox.width * scale) / 2;
+    const offsetY = center - (viewBox.height * scale) / 2;
 
-        if (i === 0) {
-          pathData = `M ${outerX} ${outerY}`;
-        }
-        pathData += ` L ${innerX} ${innerY} L ${nextOuterX} ${nextOuterY}`;
-      }
-      pathData += ' Z';
+    dialGroup.setAttribute('transform', `translate(${offsetX}, ${offsetY}) scale(${scale})`);
+    dialGroup.appendChild(svgContent);
 
-      const bumpyDial = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      bumpyDial.setAttribute('d', pathData);
-      bumpyDial.setAttribute('fill', this.options.dialColor);
-      group.appendChild(bumpyDial);
+    group.appendChild(dialGroup);
 
-      // Add a center circle for depth effect
-      const centerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      centerCircle.setAttribute('cx', String(center));
-      centerCircle.setAttribute('cy', String(center));
-      centerCircle.setAttribute('r', String(innerRadius * 0.7));
-      centerCircle.setAttribute('fill', this.lightenColor(this.options.dialColor, 15));
-      group.appendChild(centerCircle);
-
-    } else {
-      // Standard style: indicator line
-      const indicatorLength = this.options.indicatorLength;
-      const indicatorWidth = this.options.indicatorWidth;
-
-      const innerDistance = radius * (1 - indicatorLength);
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      line.setAttribute('x1', String(center));
-      line.setAttribute('y1', String(center - innerDistance));
-      line.setAttribute('x2', String(center));
-      line.setAttribute('y2', String(center - radius - 4));
-      line.setAttribute('stroke', this.options.indicatorColor);
-      line.setAttribute('stroke-width', String(indicatorWidth));
-      line.setAttribute('stroke-linecap', 'round');
-      group.appendChild(line);
-    }
-
-    // Set transform origin
+    // Set transform origin for rotation
     group.style.transformOrigin = `${center}px ${center}px`;
 
     return group;
-  }
-
-  /**
-   * Lighten a hex color
-   */
-  private lightenColor(color: string, percent: number): string {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = Math.min(255, (num >> 16) + amt);
-    const G = Math.min(255, ((num >> 8) & 0x00ff) + amt);
-    const B = Math.min(255, (num & 0x0000ff) + amt);
-    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
   }
 }

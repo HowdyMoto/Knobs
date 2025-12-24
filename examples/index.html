@@ -145,6 +145,16 @@
       color: #8a949e;
     }
 
+    .tag-code {
+      background: rgba(35, 134, 54, 0.15);
+      color: #3fb950;
+    }
+
+    .tag-js {
+      background: rgba(137, 87, 229, 0.15);
+      color: #a371f7;
+    }
+
     footer {
       text-align: center;
       padding: 40px 20px;
@@ -268,6 +278,57 @@
 
   <div class="container">
     <div class="examples-grid">
+      <a href="html-css-example.html" class="example-card">
+        <div class="card-preview" style="background: linear-gradient(135deg, #238636 0%, #1a6b2c 100%);">
+          <pre style="color: #fff; font-size: 11px; margin: 0; text-align: left;">
+&lt;div class="audio-knob"
+     data-min="0"
+     data-max="10"
+     data-value="5"&gt;
+&lt;/div&gt;
+          </pre>
+        </div>
+        <div class="card-content">
+          <h2>HTML & CSS Example</h2>
+          <p>Create controls declaratively with HTML classes and data attributes. No JavaScript config needed.</p>
+          <span class="card-tag tag-code">HTML</span>
+        </div>
+      </a>
+
+      <a href="javascript-example.html" class="example-card">
+        <div class="card-preview" style="background: linear-gradient(135deg, #8957e5 0%, #6e40c9 100%);">
+          <pre style="color: #fff; font-size: 11px; margin: 0; text-align: left;">
+import { Knob } from 'audio-knobs';
+
+const knob = new Knob('#vol', {
+  min: 0, max: 100
+});
+          </pre>
+        </div>
+        <div class="card-content">
+          <h2>JavaScript Example</h2>
+          <p>Full programmatic control with the JavaScript API. Events, methods, and dynamic updates.</p>
+          <span class="card-tag tag-js">JavaScript</span>
+        </div>
+      </a>
+
+      <a href="api-demo.html" class="example-card">
+        <div class="card-preview api-preview">
+          <pre style="color: #7ee787; font-size: 12px; margin: 0; text-align: left;">
+const knob = new Knob({
+  mode: 'bounded',
+  min: 0,
+  max: 11
+});
+          </pre>
+        </div>
+        <div class="card-content">
+          <h2>API Documentation</h2>
+          <p>Interactive examples with live demos and source code for every feature.</p>
+          <span class="card-tag tag-docs">Docs</span>
+        </div>
+      </a>
+
       <a href="knobs-gallery.html" class="example-card">
         <div class="card-preview knobs-preview">
           <div class="knob-icon">
@@ -312,26 +373,9 @@
           </div>
         </div>
         <div class="card-content">
-          <h2>AK-47 Synth</h2>
+          <h2>AK-47 Synth example</h2>
           <p>A minimalist synthesizer demo showcasing clean, industrial design aesthetics.</p>
           <span class="card-tag tag-demo">Interactive Demo</span>
-        </div>
-      </a>
-
-      <a href="api-demo.html" class="example-card">
-        <div class="card-preview api-preview">
-          <pre style="color: #7ee787; font-size: 12px; margin: 0; text-align: left;">
-const knob = new Knob({
-  mode: 'bounded',
-  min: 0,
-  max: 11
-});
-          </pre>
-        </div>
-        <div class="card-content">
-          <h2>API Documentation</h2>
-          <p>Interactive examples with live demos and source code for every feature.</p>
-          <span class="card-tag tag-docs">Docs</span>
         </div>
       </a>
     </div>

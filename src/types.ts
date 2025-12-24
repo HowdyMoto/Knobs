@@ -129,10 +129,18 @@ export interface KnobOptions {
   className?: string;
 
   /**
-   * Custom SVG markup for the knob dial.
-   * When provided, replaces the default knob body and dial with your custom SVG.
+   * Built-in knob dial style preset name.
+   * Available presets: 'default'
+   * You can register additional styles in svg-assets.ts
+   */
+  knobStyle?: string;
+
+  /**
+   * Custom SVG markup for the knob dial (overrides knobStyle).
    * The SVG should define a viewBox (e.g., "0 0 100 100") - it will be scaled to fit.
    * The entire SVG rotates as a unit around the center.
+   * Use CSS variables for colors:
+   *   --knob-dial-color, --knob-dial-highlight, --knob-indicator-color
    */
   knobSvg?: string;
 }
@@ -203,6 +211,7 @@ export const DEFAULT_OPTIONS = {
   fontFamily: 'Arial, sans-serif',
   showValueDisplay: false,
   valueDisplayColor: '#4ecdc4',
+  knobStyle: 'default',
 };
 
 /**
@@ -283,6 +292,21 @@ export interface SliderOptions {
 
   /** Custom CSS class for the container */
   className?: string;
+
+  /**
+   * Built-in slider thumb style preset name.
+   * Available presets: 'default'
+   * You can register additional styles in svg-assets.ts
+   */
+  thumbStyle?: string;
+
+  /**
+   * Custom SVG markup for the slider thumb (overrides thumbStyle).
+   * The SVG should define a viewBox (e.g., "0 0 30 40") - it will be scaled to fit.
+   * Use CSS variables for colors:
+   *   --slider-thumb-color, --slider-thumb-highlight, --slider-indicator-color
+   */
+  thumbSvg?: string;
 }
 
 /**
@@ -369,4 +393,5 @@ export const DEFAULT_SLIDER_OPTIONS = {
   toggleLabel: '',
   toggleLedColor: '#00ff00',
   showValueDisplay: false,
+  thumbStyle: 'default',
 };

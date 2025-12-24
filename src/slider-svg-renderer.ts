@@ -1,11 +1,12 @@
 import { SliderOptions, DEFAULT_SLIDER_OPTIONS } from './types';
+import { getSliderThumbSvg, parseSvgString, getViewBoxDimensions, lightenColor, darkenColor } from './svg-assets';
 
 /**
  * Creates SVG elements for the slider
  */
 export class SliderSVGRenderer {
   private options: typeof DEFAULT_SLIDER_OPTIONS &
-    Pick<SliderOptions, 'valueLabels' | 'className'>;
+    Pick<SliderOptions, 'valueLabels' | 'className' | 'thumbStyle' | 'thumbSvg'>;
   private instanceId: number;
 
   // Unique filter IDs for this instance
@@ -84,7 +85,7 @@ export class SliderSVGRenderer {
 
     const trackStop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
     trackStop1.setAttribute('offset', '0%');
-    trackStop1.setAttribute('stop-color', this.darkenColor(this.options.trackColor, 20));
+    trackStop1.setAttribute('stop-color', darkenColor(this.options.trackColor, 20));
 
     const trackStop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
     trackStop2.setAttribute('offset', '50%');
@@ -92,7 +93,7 @@ export class SliderSVGRenderer {
 
     const trackStop3 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
     trackStop3.setAttribute('offset', '100%');
-    trackStop3.setAttribute('stop-color', this.lightenColor(this.options.trackColor, 10));
+    trackStop3.setAttribute('stop-color', lightenColor(this.options.trackColor, 10));
 
     trackGradient.appendChild(trackStop1);
     trackGradient.appendChild(trackStop2);
@@ -109,11 +110,11 @@ export class SliderSVGRenderer {
 
     const thumbStop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
     thumbStop1.setAttribute('offset', '0%');
-    thumbStop1.setAttribute('stop-color', this.lightenColor(this.options.thumbColor, 30));
+    thumbStop1.setAttribute('stop-color', lightenColor(this.options.thumbColor, 30));
 
     const thumbStop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
     thumbStop2.setAttribute('offset', '100%');
-    thumbStop2.setAttribute('stop-color', this.darkenColor(this.options.thumbColor, 20));
+    thumbStop2.setAttribute('stop-color', darkenColor(this.options.thumbColor, 20));
 
     thumbGradient.appendChild(thumbStop1);
     thumbGradient.appendChild(thumbStop2);
@@ -168,7 +169,7 @@ export class SliderSVGRenderer {
     groove.setAttribute('height', String(trackHeight - 4));
     groove.setAttribute('rx', '1.5');
     groove.setAttribute('ry', '1.5');
-    groove.setAttribute('fill', this.darkenColor(this.options.trackColor, 30));
+    groove.setAttribute('fill', darkenColor(this.options.trackColor, 30));
     group.appendChild(groove);
 
     return group;
@@ -265,7 +266,7 @@ export class SliderSVGRenderer {
   }
 
   /**
-   * Create the thumb/fader cap with ridged style
+   * Create the thumb/fader cap using SVG assets
    */
   private createThumb(labelPadding: number): SVGGElement {
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -273,57 +274,41 @@ export class SliderSVGRenderer {
     const thumbWidth = 24;
     const thumbHeight = 30;
 
-    // Main thumb body
-    const body = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    body.setAttribute('x', String(centerX - thumbWidth / 2));
-    body.setAttribute('y', String(-thumbHeight / 2));
-    body.setAttribute('width', String(thumbWidth));
-    body.setAttribute('height', String(thumbHeight));
-    body.setAttribute('rx', '3');
-    body.setAttribute('ry', '3');
-    body.setAttribute('fill', `url(#${this.thumbGradientId})`);
-    body.setAttribute('filter', `url(#${this.shadowFilterId})`);
-    group.appendChild(body);
+    // Get SVG string from options or preset
+    const svgString = getSliderThumbSvg(this.options.thumbStyle, this.options.thumbSvg);
 
-    // Ridges on the thumb
-    const ridgeCount = 5;
-    const ridgeSpacing = (thumbHeight - 10) / (ridgeCount - 1);
-    const ridgeStartY = -thumbHeight / 2 + 5;
+    // Parse the SVG and get its content
+    const svgContent = parseSvgString(svgString, this.instanceId);
+    const viewBox = getViewBoxDimensions(svgContent);
 
-    for (let i = 0; i < ridgeCount; i++) {
-      const ridgeY = ridgeStartY + i * ridgeSpacing;
+    // Calculate scale to fit the thumb within expected dimensions
+    const scaleX = thumbWidth / viewBox.width;
+    const scaleY = thumbHeight / viewBox.height;
+    const scale = Math.min(scaleX, scaleY);
 
-      const ridge = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      ridge.setAttribute('x1', String(centerX - thumbWidth / 2 + 4));
-      ridge.setAttribute('y1', String(ridgeY));
-      ridge.setAttribute('x2', String(centerX + thumbWidth / 2 - 4));
-      ridge.setAttribute('y2', String(ridgeY));
-      ridge.setAttribute('stroke', this.darkenColor(this.options.thumbColor, 30));
-      ridge.setAttribute('stroke-width', '1');
-      ridge.setAttribute('stroke-linecap', 'round');
-      group.appendChild(ridge);
+    // Create a nested group for scaling and positioning
+    const thumbGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
-      // Highlight below each ridge
-      const highlight = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      highlight.setAttribute('x1', String(centerX - thumbWidth / 2 + 4));
-      highlight.setAttribute('y1', String(ridgeY + 1.5));
-      highlight.setAttribute('x2', String(centerX + thumbWidth / 2 - 4));
-      highlight.setAttribute('y2', String(ridgeY + 1.5));
-      highlight.setAttribute('stroke', this.lightenColor(this.options.thumbColor, 20));
-      highlight.setAttribute('stroke-width', '0.5');
-      highlight.setAttribute('stroke-linecap', 'round');
-      group.appendChild(highlight);
-    }
+    // Set CSS variables for colors on the thumb group
+    thumbGroup.style.setProperty('--slider-thumb-color', this.options.thumbColor);
+    thumbGroup.style.setProperty('--slider-thumb-highlight', lightenColor(this.options.thumbColor, 30));
+    thumbGroup.style.setProperty('--slider-thumb-shadow', darkenColor(this.options.thumbColor, 20));
+    thumbGroup.style.setProperty('--slider-indicator-color', '#ffffff');
 
-    // Center indicator line
-    const indicator = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    indicator.setAttribute('x', String(centerX - thumbWidth / 2));
-    indicator.setAttribute('y', String(-1));
-    indicator.setAttribute('width', String(thumbWidth));
-    indicator.setAttribute('height', '2');
-    indicator.setAttribute('fill', '#ffffff');
-    indicator.setAttribute('opacity', '0.8');
-    group.appendChild(indicator);
+    // Position and scale the SVG content
+    // Center horizontally at centerX, vertically at 0 (thumb moves along track)
+    const scaledWidth = viewBox.width * scale;
+    const scaledHeight = viewBox.height * scale;
+    const offsetX = centerX - scaledWidth / 2;
+    const offsetY = -scaledHeight / 2;
+
+    thumbGroup.setAttribute('transform', `translate(${offsetX}, ${offsetY}) scale(${scale})`);
+    thumbGroup.appendChild(svgContent);
+
+    // Apply shadow filter to the group
+    thumbGroup.setAttribute('filter', `url(#${this.shadowFilterId})`);
+
+    group.appendChild(thumbGroup);
 
     return group;
   }
@@ -379,30 +364,6 @@ export class SliderSVGRenderer {
     }
 
     return container;
-  }
-
-  /**
-   * Lighten a hex color
-   */
-  private lightenColor(color: string, percent: number): string {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = Math.min(255, (num >> 16) + amt);
-    const G = Math.min(255, ((num >> 8) & 0x00ff) + amt);
-    const B = Math.min(255, (num & 0x0000ff) + amt);
-    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
-  }
-
-  /**
-   * Darken a hex color
-   */
-  private darkenColor(color: string, percent: number): string {
-    const num = parseInt(color.replace('#', ''), 16);
-    const amt = Math.round(2.55 * percent);
-    const R = Math.max(0, (num >> 16) - amt);
-    const G = Math.max(0, ((num >> 8) & 0x00ff) - amt);
-    const B = Math.max(0, (num & 0x0000ff) - amt);
-    return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
   }
 
   /**

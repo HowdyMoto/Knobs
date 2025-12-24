@@ -186,3 +186,95 @@ export function createMuteFader(
     ...options,
   });
 }
+
+/**
+ * Initialize knobs and sliders from HTML elements with data attributes.
+ *
+ * Usage:
+ * ```html
+ * <!-- Knob -->
+ * <div class="audio-knob" data-min="0" data-max="10" data-value="5" data-label="Volume"></div>
+ *
+ * <!-- Slider -->
+ * <div class="audio-slider" data-min="0" data-max="100" data-value="50" data-label="Fader"></div>
+ * ```
+ *
+ * Then call:
+ * ```javascript
+ * import { initFromDOM } from 'audio-knobs';
+ * const controls = initFromDOM();
+ * ```
+ *
+ * @param root - Optional root element to search within (defaults to document)
+ * @returns Object with arrays of created knobs and sliders
+ */
+export function initFromDOM(root: HTMLElement | Document = document): { knobs: Knob[]; sliders: Slider[] } {
+  const knobs: Knob[] = [];
+  const sliders: Slider[] = [];
+
+  // Find and initialize knobs
+  const knobElements = root.querySelectorAll('.audio-knob');
+  knobElements.forEach((element) => {
+    const el = element as HTMLElement;
+    const options = parseDataAttributes(el, 'knob');
+    const knob = new Knob(el, options as Partial<KnobOptions>);
+    knobs.push(knob);
+  });
+
+  // Find and initialize sliders
+  const sliderElements = root.querySelectorAll('.audio-slider');
+  sliderElements.forEach((element) => {
+    const el = element as HTMLElement;
+    const options = parseDataAttributes(el, 'slider');
+    const slider = new Slider(el, options as Partial<SliderOptions>);
+    sliders.push(slider);
+  });
+
+  return { knobs, sliders };
+}
+
+/**
+ * Parse data attributes from an element into options object
+ */
+function parseDataAttributes(el: HTMLElement, type: 'knob' | 'slider'): Partial<KnobOptions | SliderOptions> {
+  const options: Record<string, unknown> = {};
+
+  // Common numeric options
+  const numericAttrs = ['min', 'max', 'value', 'step', 'size', 'tickCount', 'length', 'width'];
+  numericAttrs.forEach((attr) => {
+    const value = el.dataset[attr];
+    if (value !== undefined) {
+      options[attr] = parseFloat(value);
+    }
+  });
+
+  // Common string options
+  const stringAttrs = [
+    'label', 'mode', 'className',
+    'dialColor', 'indicatorColor', 'tickColor', 'labelColor', 'backgroundColor',
+    'thumbColor', 'trackColor', 'toggleLabel', 'toggleLedColor', 'valueDisplayColor',
+    'knobStyle', 'thumbStyle'
+  ];
+  stringAttrs.forEach((attr) => {
+    const value = el.dataset[attr];
+    if (value !== undefined) {
+      options[attr] = value;
+    }
+  });
+
+  // Boolean options
+  const booleanAttrs = ['showTicks', 'showValueLabels', 'showValueDisplay', 'showToggle'];
+  booleanAttrs.forEach((attr) => {
+    const value = el.dataset[attr];
+    if (value !== undefined) {
+      options[attr] = value === 'true' || value === '1' || value === '';
+    }
+  });
+
+  // Array options (comma-separated)
+  if (el.dataset.valueLabels) {
+    options.valueLabels = el.dataset.valueLabels.split(',').map(s => s.trim());
+  }
+
+  return options;
+}
